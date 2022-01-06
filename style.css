@@ -1,0 +1,89 @@
+body {
+    background-color: #faf8ef;
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #776e65;
+    overflow: hidden;
+}
+
+#container {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 100vw;
+    grid-template-rows: 10vh auto;
+    align-items: center;
+    justify-content: center;
+}
+
+#title {
+    font-size: 10vh;
+}
+
+#grid {
+    width: 55vh;
+    height: 55vh;
+    padding: 2vh;
+    margin: 0 auto;
+    border-radius: 2%;
+    background-color: #bbada0;
+    display: grid;
+    grid-template-columns: 12.25vh 12.25vh 12.25vh 12.25vh;
+    grid-template-rows: 12.25vh 12.25vh 12.25vh 12.25vh;
+    grid-gap: 2vh;
+
+}
+
+.square {
+    background-color: #cdc1b4;
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6vh;
+}
+
+.n2 {
+    background-color: #eee4da;
+}
+
+.n4 {
+    background-color: #eee1c9;
+}
+
+.n8 {
+    background-color: #f3b27a;
+    color: #f9f6f2;
+}
+
+.n16 {
+    background-color: #f69664;
+    color: #f9f6f2;
+}
+
+.n32 {
+    background-color: #f77c5f;
+    color: #f9f6f2;
+}
+
+.n64 {
+    background-color: #f75f3b;
+    color: #f9f6f2;
+}
+
+.n128 {
+    background-color: #edd073;
+    color: #f9f6f2;
+}
+
+.n256 {
+    background-color: #edcc62;
+    color: #f9f6f2;
+}
+
+.n512 {
+    background-color: #edc950;
+    color: #f9f6f2;
+}
