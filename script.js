@@ -1,3 +1,8 @@
+var lastPosition = [[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0]];
+
 var positions = [[0, 0, 0, 0],
 [0, 0, 0, 0],
 [0, 0, 0, 0],
@@ -172,8 +177,6 @@ function Move(dir) {
             break;
     }
 
-    console.log(positions);
-
 }
 
 function Draw() {
@@ -191,36 +194,45 @@ function Draw() {
 
 $("body").keyup(function(event) {
     let key = event.key;
+    
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            lastPosition[i][j] = positions[i][j];
+        }
+    }
+    
     switch(key) {
         case "ArrowUp":
-            console.log("up");
-
             Move(1);
             Draw();
-            FirstRandom();
             break;
         case "ArrowDown":
-            console.log("down");
-            
             Move(2);
             Draw();
-            FirstRandom();
             break;
         case "ArrowRight":
-            console.log("right");
-            
             Move(3);
-            Draw();
-            FirstRandom();
+            Draw();   
             break;
         case "ArrowLeft":
-            console.log("left");
-            
             Move(4);
             Draw();
-            FirstRandom();
             break;
     }
+    
+    let different = 0;
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if(lastPosition[i][j] != positions[i][j]) {
+                different++;
+            }
+        }
+    }
+
+    if (different) {
+        FirstRandom();
+    }
+    
 
     for (let i = 0; i <= 3; i++) {
         for (let j = 0; j <= 3; j++) {
