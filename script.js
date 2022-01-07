@@ -7,6 +7,7 @@ var ifAdded = [[0, 0, 0, 0],
 [0, 0, 0, 0],
 [0, 0, 0, 0]];
 
+
 $("body").append("<div id = \"container\"></div>");
 
 $("#container").append("<div id = \"title\">2048</div>").append("<div id = \"grid\"></div>");
@@ -22,16 +23,17 @@ function FirstRandom() {
     let random = "#s" + place;
     let randomNumber = Math.random();
     if (randomNumber <= 0.9) {
-        randomNumber = "2";
+        randomNumber = "1";
     } else {
-        randomNumber = "4";
+        randomNumber = "2";
     }
 
     if($(random).hasClass("free")) {
-        $(random).removeClass("free").append("<div class = \" block n" + randomNumber + "\">" + randomNumber + "</div>");
+        let power = Math.pow(2, parseInt(randomNumber));
+        $(random).removeClass("free").append("<div class = \" block n" + power + "\">" + power + "</div>");
         let x = place[0]
         let y = place[1]
-        positions[x][y] = randomNumber;
+        positions[x][y] = parseInt(randomNumber);
     } else {
         FirstRandom();
     }
@@ -41,70 +43,148 @@ function FirstRandom() {
 FirstRandom();
 FirstRandom();
 
-function Move(up, right) {
-    let direction;
-    if (right) {
-        if (right === 1) {
-            direction = 3;
-        } else {
-            direction = 0;
-        }
-        $(".block").each(function(){
-            let parentPos = $(this).parent().attr("id");
-            let newPos = parentPos[1] + direction.toString();
-            $("#s" + parentPos[1] + parentPos[2]).empty().addClass("free");
-
-            positions[parseInt(parentPos[1])][parseInt(parentPos[2])] = 0;
-            
-            let a = parseInt(newPos[0]);
-            let b = parseInt(newPos[1]);
-
-            if($("#s" + newPos[0] + newPos[1]).hasClass("free")) {
-                $("#s" + newPos[0] + newPos[1]).append($(this)).removeClass("free");
-                positions[a][b] = $(this).html();
-            } else if($("#s" + newPos[0] + Math.abs(b - 1)).hasClass("free")) {
-                $("#s" + newPos[0] + Math.abs(b - 1)).append($(this)).removeClass("free");
-                positions[a][Math.abs(b - 1)] = $(this).html();
-            } else if($("#s" + newPos[0] + Math.abs(b - 2)).hasClass("free")) {
-                $("#s" + newPos[0] + Math.abs(b - 2)).append($(this)).removeClass("free");
-                positions[a][Math.abs(b - 2)] = $(this).html();
-            } else if($("#s" + newPos[0] + Math.abs(b - 3)).hasClass("free")) {
-                $("#s" + newPos[0] + Math.abs(b - 3)).append($(this)).removeClass("free");
-                positions[a][Math.abs(b - 3)] = $(this).html();
+function Move(dir) {
+    switch(dir) {
+        case 1:
+            for (let j = 3; j >= 0; j--) {
+                let rowString = "";
+                let x = 0;
+                for (let i = 0; i < 4; i++) {
+                    if (positions[i][j] !== 0) {
+                        rowString += positions[i][j];
+                        positions[i][j] = 0;
+                    }
+                }
+                for (let k = 0; k <= rowString.length - 1; k++) {
+                    positions[x][j] = parseInt(rowString[k]);
+                    if (x !== 0) {
+                        if (positions[x - 1][j] === positions[x][j]) {
+                            if (ifAdded[x - 1][j] === 0) {
+                                positions[x - 1][j]++;
+                                positions[x][j] = 0;
+                                ifAdded[x - 1][j] = 1;
+                            } else {
+                                x++;
+                            }
+                        } else {
+                            x++;
+                        }
+                    } else {
+                        x++;
+                    }
+                    
+                }
             }
-        });
+            break;
+
+        case 2:
+            for (let j = 0; j < 4; j++) {
+                let rowString = "";
+                let x = 3;
+                for (let i = 3; i >= 0; i--) {
+                    if (positions[i][j] !== 0) {
+                        rowString += positions[i][j];
+                        positions[i][j] = 0;
+                    }
+                }
+                for (let k = 0; k <= rowString.length - 1; k++) {
+                    positions[x][j] = parseInt(rowString[k]);
+                    if (x !== 3) {
+                        if (positions[x + 1][j] === positions[x][j]) {
+                            if (ifAdded[x + 1][j] === 0) {
+                                positions[x + 1][j]++;
+                                positions[x][j] = 0;
+                                ifAdded[x + 1][j] = 1;
+                            } else {
+                                x--;
+                            }
+                        } else {
+                            x--;
+                        }
+                    } else {
+                        x--;
+                    }
+                }
+            }
+            break;
+        
+        
+        case 3:
+            for (let i = 0; i < 4; i++) {
+                let rowString = "";
+                let x = 3;
+                for (let j = 3; j >= 0; j--) {
+                    if (positions[i][j] !== 0) {
+                        rowString += positions[i][j];
+                        positions[i][j] = 0;
+                    }
+                }
+                for (let k = 0; k <= rowString.length - 1; k++) {
+                    positions[i][x] = parseInt(rowString[k]);
+                    if (x !== 3) {
+                        if (positions[i][x + 1] === positions[i][x]) {
+                            if (ifAdded[i][x + 1] === 0) {
+                                positions[i][x + 1]++;
+                                positions[i][x] = 0;
+                                ifAdded[i][x + 1] = 1;
+                            } else {
+                                x--;
+                            }
+                        } else {
+                            x--;
+                        }
+                    } else {
+                        x--;
+                    }
+                }
+            }
+            break;
+        
+        case 4:
+            for (let i = 3; i >= 0; i--) {
+                let rowString = "";
+                let x = 0;
+                for (let j = 0; j < 4; j++) {
+                    if (positions[i][j] !== 0) {
+                        rowString += positions[i][j];
+                        positions[i][j] = 0;
+                    }
+                }
+                for (let k = 0; k <= rowString.length - 1; k++) {
+                    positions[i][x] = parseInt(rowString[k]);
+                    if (x !== 0) {
+                        if (positions[i][x - 1] === positions[i][x]) {
+                            if (ifAdded[i][x - 1] === 0) {
+                                positions[i][x - 1]++;
+                                positions[i][x] = 0;
+                                ifAdded[i][x - 1] = 1;
+                            } else {
+                                x++;
+                            }
+                        } else {
+                            x++;
+                        }
+                    } else {
+                        x++;
+                    }
+                }
+            }
+            break;
     }
 
-    if (up) {
-        if (up === 1) {
-            direction = 0;
-        } else {
-            direction = 3;
-        }
-        $(".block").each(function(){
-            let parentPos = $(this).parent().attr("id");
-            let newPos = direction.toString() + parentPos[2];
-            $("#s" + parentPos[1] + parentPos[2]).empty().addClass("free");
+    console.log(positions);
 
-            positions[parseInt(parentPos[1])][parseInt(parentPos[2])] = 0;
-            
-            let a = parseInt(newPos[0]);
-            let b = parseInt(newPos[1]);
+}
 
-            if($("#s" + newPos[0] + newPos[1]).hasClass("free")) {
-                $("#s" + newPos[0] + newPos[1]).append($(this)).removeClass("free");
-                positions[a][b] = $(this).html();
-            } else if($("#s" + Math.abs(a - 1) + newPos[0]).hasClass("free")) {
-                $("#s" + Math.abs(a - 1) + newPos[0]).append($(this)).removeClass("free");
-                positions[Math.abs(a - 1)][b] = $(this).html();
-            } else if($("#s" + Math.abs(a - 2) + newPos[0]).hasClass("free")) {
-                $("#s" + Math.abs(a - 2) + newPos[0]).append($(this)).removeClass("free");
-                positions[Math.abs(a - 2)][b] = $(this).html();
-            } else if($("#s" + Math.abs(a - 3) + newPos[0]).hasClass("free")) {
-                $("#s" + Math.abs(a - 3) + newPos[0]).append($(this)).removeClass("free");
-                positions[Math.abs(a - 3)][b] = $(this).html();
+function Draw() {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            $("#s" + i + j).addClass("free").empty();
+            if (positions[i][j] !== 0) {
+                let number = Math.pow(2, positions[i][j]);
+                $("#s" + i + j).append("<div class = \" block n" + number + "\">" + number + "</div>").removeClass("free");
             }
-        });
+        }
     }
 }
 
@@ -115,26 +195,37 @@ $("body").keyup(function(event) {
         case "ArrowUp":
             console.log("up");
 
-            Move(1, 0);
+            Move(1);
+            Draw();
             FirstRandom();
             break;
         case "ArrowDown":
             console.log("down");
             
-            Move(-1, 0);
+            Move(2);
+            Draw();
             FirstRandom();
             break;
         case "ArrowRight":
             console.log("right");
             
-            Move(0, 1);
+            Move(3);
+            Draw();
             FirstRandom();
             break;
         case "ArrowLeft":
             console.log("left");
             
-            Move(0, -1);
+            Move(4);
+            Draw();
             FirstRandom();
             break;
     }
+
+    for (let i = 0; i <= 3; i++) {
+        for (let j = 0; j <= 3; j++) {
+            ifAdded[i][j] = 0;
+        }
+    }
+    
 });
