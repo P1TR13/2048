@@ -22,14 +22,18 @@ for (let i = 0; i < 4; i++) {
     }
 }
 
-$("#heading").append("<div id = \"title\">2048</div>").append("<div id = \"controls\"></div>")
-$("#controls").append("<div id = \"scores\"></div>").append("<div id = \"newGame\"></div>")
-$("#scores").append("<div id =\"currentScore\"></div>").append("<div id =\"bestScore\"></div>")
+$("#heading").append("<div id = \"title\">2048</div>").append("<div id = \"scores\"></div>").append("<div id = \"newGame\"></div>");
+$("#scores").append("<div id =\"currentScore\"><p class = \"name\">SCORE</p> <p class = \"score\">0</p></div>").append("<div id =\"bestScore\"><p class = \"name\">BEST</p> <p class = \"score\">0</p></div>");
 
-$("#newGame").append("<button id = \"newGameButton\">New Game</button>")
+if(localStorage.getItem("bestScore") > 0) {
+    $("#bestScore").children(".score").html(localStorage.getItem("bestScore"));
+}
+
+
+$("#newGame").append("<button id = \"newGameButton\">New Game</button>");
 
 function FirstRandom() {
-    let place = Math.floor(Math.random() * 16).toString()
+    let place = Math.floor(Math.random() * 16).toString();
     place = (Math.floor(place/4)).toString() + (place % 4).toString();
     let random = "#s" + place;
     let randomNumber = Math.random();
@@ -42,8 +46,8 @@ function FirstRandom() {
     if($(random).hasClass("free")) {
         let power = Math.pow(2, parseInt(randomNumber));
         $(random).removeClass("free").append("<div class = \" justCreated block n" + power + "\">" + power + "</div>");
-        let x = place[0]
-        let y = place[1]
+        let x = place[0];
+        let y = place[1];
         positions[x][y] = parseInt(randomNumber);
     } else {
         FirstRandom();
@@ -55,6 +59,7 @@ FirstRandom();
 FirstRandom();
 
 function Move(dir) {
+    let score = parseInt($("#currentScore").children(".score").html());
     switch(dir) {
         case 1:
             for (let j = 3; j >= 0; j--) {
@@ -74,6 +79,7 @@ function Move(dir) {
                                 positions[x - 1][j]++;
                                 positions[x][j] = 0;
                                 ifAdded[x - 1][j] = 1;
+                                score += Math.pow(2, positions[x - 1][j]);
                             } else {
                                 x++;
                             }
@@ -106,6 +112,7 @@ function Move(dir) {
                                 positions[x + 1][j]++;
                                 positions[x][j] = 0;
                                 ifAdded[x + 1][j] = 1;
+                                score += Math.pow(2, positions[x + 1][j]);
                             } else {
                                 x--;
                             }
@@ -138,6 +145,7 @@ function Move(dir) {
                                 positions[i][x + 1]++;
                                 positions[i][x] = 0;
                                 ifAdded[i][x + 1] = 1;
+                                score += Math.pow(2, positions[i][x + 1]);
                             } else {
                                 x--;
                             }
@@ -169,6 +177,7 @@ function Move(dir) {
                                 positions[i][x - 1]++;
                                 positions[i][x] = 0;
                                 ifAdded[i][x - 1] = 1;
+                                score += Math.pow(2, positions[i][x - 1]);
                             } else {
                                 x++;
                             }
@@ -183,6 +192,11 @@ function Move(dir) {
             break;
     }
 
+    $("#currentScore").children(".score").html(score);
+    if (score > parseInt($("#bestScore").children(".score").html())) {
+        $("#bestScore").children(".score").html(score);
+        localStorage.setItem("bestScore", score);
+    }
 }
 
 function Draw() {
@@ -249,4 +263,26 @@ $("body").keyup(function(event) {
         }
     }
     
+});
+
+$("#newGameButton").click(function() {
+    $("#currentScore").children(".score").html("0");
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            positions[i][j] = 0;
+        }
+    }
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            lastPosition[i][j] = 0;
+        }
+    }
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            ifAdded[i][j] = 0;
+        }
+    }
+    Draw();
+    FirstRandom();
+    FirstRandom();
 });
