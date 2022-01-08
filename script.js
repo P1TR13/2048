@@ -12,15 +12,25 @@ var ifAdded = [[0, 0, 0, 0],
 [0, 0, 0, 0],
 [0, 0, 0, 0]];
 
+var isEnd = [[0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 0]];
+
 
 $("body").append("<div id = \"container\"></div>");
 
-$("#container").append("<div id = \"heading\"></div>").append("<div id = \"grid\"></div>");
+$("#container").append("<div id = \"heading\"></div>").append("<div id =\"end\"></div>").append("<div id = \"grid\"></div>");
+
 for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
         $("#grid").append("<div class = \"square free\" id = \"s" + i + j + "\"></div>");
     }
 }
+
+
 
 $("#heading").append("<div id = \"title\">2048</div>").append("<div id = \"scores\"></div>").append("<div id = \"newGame\"></div>");
 $("#scores").append("<div id =\"currentScore\"><p class = \"name\">SCORE</p> <p class = \"score\">0</p></div>").append("<div id =\"bestScore\"><p class = \"name\">BEST</p> <p class = \"score\">0</p></div>");
@@ -30,7 +40,7 @@ if(localStorage.getItem("bestScore") > 0) {
 }
 
 
-$("#newGame").append("<button id = \"newGameButton\">New Game</button>");
+$("#newGame").append("<button class = \"newGameButton\">New Game</button>");
 
 function FirstRandom() {
     let place = Math.floor(Math.random() * 16).toString();
@@ -49,6 +59,7 @@ function FirstRandom() {
         let x = place[0];
         let y = place[1];
         positions[x][y] = parseInt(randomNumber);
+        
     } else {
         FirstRandom();
     }
@@ -214,6 +225,65 @@ function Draw() {
     }
 }
 
+function isGameOver() {
+    for (let i = 0; i <= 3; i++) {
+        for (let j = 0; j <= 3; j++) {
+            isEnd[i + 1][j + 1] = positions[i][j];
+        }
+    }
+    let howMany = 0;
+
+    for (let i = 1; i < 5; i++) {
+        for (let j = 1; j < 5; j++) {
+            if (isEnd[i][j] == isEnd[i - 1][j]) {
+                howMany++;
+            }
+
+            if (isEnd[i][j] == isEnd[i + 1][j]) {
+                howMany++;
+            }
+            if (isEnd[i][j] == isEnd[i][j - 1]) {
+                howMany++;
+            }
+            if (isEnd[i][j] == isEnd[i][j + 1]) {
+                howMany++;
+            }
+        }
+    }
+
+    if(!howMany) {
+        if ($("#end").children().length == 0) {
+            $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButton\">Try again</button></div>");
+            $(".newGameButton").click(function() {
+                $("#gameOver").remove();
+            
+                $("#currentScore").children(".score").html("0");
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        positions[i][j] = 0;
+                    }
+                }
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        lastPosition[i][j] = 0;
+                    }
+                }
+                for (let i = 0; i < 4; i++) {
+                    for (let j = 0; j < 4; j++) {
+                        ifAdded[i][j] = 0;
+                    }
+                }
+                Draw();
+                FirstRandom();
+                FirstRandom();
+            });
+        }
+        
+    } else {
+        return;
+    }
+}
+
 
 $("body").keyup(function(event) {
     let key = event.key;
@@ -252,8 +322,10 @@ $("body").keyup(function(event) {
         }
     }
 
+
     if (different) {
         FirstRandom();
+        isGameOver();
     }
     
 
@@ -265,7 +337,9 @@ $("body").keyup(function(event) {
     
 });
 
-$("#newGameButton").click(function() {
+$(".newGameButton").click(function() {
+    $("#gameOver").remove();
+
     $("#currentScore").children(".score").html("0");
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {

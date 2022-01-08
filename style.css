@@ -14,7 +14,7 @@ body {
     height: 100vh;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 150px auto;
+    grid-template-rows: 150px 0px auto;
     
     justify-content: center;
     margin: auto;
@@ -73,7 +73,7 @@ p {
     grid-column: span 2;
 }
 
-#newGameButton {
+.newGameButton {
     background-color: #8f7a66;
     border: none;
     color: #faf8ef;
@@ -84,7 +84,7 @@ p {
     border-radius: 4px;
 }
 
-#newGameButton:hover {
+.newGameButton:hover {
     cursor: pointer;
 }
 
@@ -100,6 +100,22 @@ p {
     grid-template-columns: 96.037px 96.037px 96.037px 96.037px;
     grid-template-rows: 96.037px 96.037px 96.037px 96.037px;
     grid-gap: 15.68px;
+}
+
+#gameOver {
+    margin-top: 40px;
+    position: relative;
+    width: 463.56px;
+    height: 463.56px;
+    padding-top: 33%;
+    font-size: 60px;
+    background-color: #ffffff7a;
+    z-index: 2;
+}
+
+#gameOver p {
+    display: block;
+    width: 100%;
 }
 
 
