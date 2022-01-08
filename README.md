@@ -18,11 +18,12 @@ Project is created with:
 
 ## Features
 * 2048 game
-#### To do:
-* Animations for boxes:
+* Animations for blocks:
   * creating
-  * moving
   * adding
+#### To do:
+* Animations for blocks:
+  * moving
 * Game over message
 * UI
 
