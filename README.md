@@ -22,10 +22,11 @@ Project is created with:
   * creating
   * adding
 * UI
+* Game over
 #### To do:
 * Animations for blocks:
   * moving
-* Game over message
+* blocks with values 1024 and higher
 * mobile-friendly
 
 ## Screenshots
