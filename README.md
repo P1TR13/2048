@@ -21,11 +21,12 @@ Project is created with:
 * Animations for blocks:
   * creating
   * adding
+* UI
 #### To do:
 * Animations for blocks:
   * moving
 * Game over message
-* UI
+* mobile-friendly
 
 ## Screenshots
 Coming soon!
