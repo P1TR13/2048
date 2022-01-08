@@ -15,12 +15,18 @@ var ifAdded = [[0, 0, 0, 0],
 
 $("body").append("<div id = \"container\"></div>");
 
-$("#container").append("<div id = \"title\">2048</div>").append("<div id = \"grid\"></div>");
+$("#container").append("<div id = \"heading\"></div>").append("<div id = \"grid\"></div>");
 for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
         $("#grid").append("<div class = \"square free\" id = \"s" + i + j + "\"></div>");
     }
 }
+
+$("#heading").append("<div id = \"title\">2048</div>").append("<div id = \"controls\"></div>")
+$("#controls").append("<div id = \"scores\"></div>").append("<div id = \"newGame\"></div>")
+$("#scores").append("<div id =\"currentScore\"></div>").append("<div id =\"bestScore\"></div>")
+
+$("#newGame").append("<button id = \"newGameButton\">New Game</button>")
 
 function FirstRandom() {
     let place = Math.floor(Math.random() * 16).toString()
