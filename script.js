@@ -35,7 +35,7 @@ function FirstRandom() {
 
     if($(random).hasClass("free")) {
         let power = Math.pow(2, parseInt(randomNumber));
-        $(random).removeClass("free").append("<div class = \" block n" + power + "\">" + power + "</div>");
+        $(random).removeClass("free").append("<div class = \" justCreated block n" + power + "\">" + power + "</div>");
         let x = place[0]
         let y = place[1]
         positions[x][y] = parseInt(randomNumber);
@@ -186,6 +186,9 @@ function Draw() {
             if (positions[i][j] !== 0) {
                 let number = Math.pow(2, positions[i][j]);
                 $("#s" + i + j).append("<div class = \" block n" + number + "\">" + number + "</div>").removeClass("free");
+                if (ifAdded[i][j]) {
+                    $("#s" + i + j).children().addClass("justAdded");
+                }
             }
         }
     }

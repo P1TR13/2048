@@ -37,6 +37,8 @@ body {
 }
 
 .square {
+    width: 100%;
+    height: 100%;
     background-color: #cdc1b4;
     border-radius: 5%;
     display: flex;
@@ -52,6 +54,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    
 }
 
 .n2 {
@@ -100,4 +103,40 @@ body {
 .n1024 {
     background-color: #ddad37;
     color: #f9f6f2;
+}
+
+.justCreated {
+    animation: createAnimation 250ms;
+}
+
+.justAdded {
+    animation: addAnimation 250ms;
+}
+
+@keyframes createAnimation {
+    0% {
+        height: 0%;
+        width: 0%;
+    }
+    100% {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+@keyframes addAnimation {
+    0% {
+        height: 100%;
+        width: 100%;
+    }
+
+    50% {
+        height: 120%;
+        width: 120%;
+    }
+
+    100% {
+        height: 100%;
+        width: 100%;
+    }
 }
