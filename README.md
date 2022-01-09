@@ -23,10 +23,10 @@ Project is created with:
   * adding
 * UI
 * Game over
+* values up to 16384
 #### To do:
 * Animations for blocks:
   * moving
-* blocks with values 1024 and higher
 * mobile-friendly
 
 ## Screenshots
