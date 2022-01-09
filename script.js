@@ -69,6 +69,8 @@ function FirstRandom() {
 FirstRandom();
 FirstRandom();
 
+var pointsThisRound = 0;
+
 function Move(dir) {
     let score = parseInt($("#currentScore").children(".score").html());
     switch(dir) {
@@ -78,12 +80,12 @@ function Move(dir) {
                 let x = 0;
                 for (let i = 0; i < 4; i++) {
                     if (positions[i][j] !== 0) {
-                        rowString += positions[i][j];
+                        rowString += (positions[i][j]).toString(16);
                         positions[i][j] = 0;
                     }
                 }
                 for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[x][j] = parseInt(rowString[k]);
+                    positions[x][j] = parseInt(rowString[k], 16);
                     if (x !== 0) {
                         if (positions[x - 1][j] === positions[x][j]) {
                             if (ifAdded[x - 1][j] === 0) {
@@ -91,6 +93,7 @@ function Move(dir) {
                                 positions[x][j] = 0;
                                 ifAdded[x - 1][j] = 1;
                                 score += Math.pow(2, positions[x - 1][j]);
+                                pointsThisRound += Math.pow(2, positions[x - 1][j]);
                             } else {
                                 x++;
                             }
@@ -111,12 +114,12 @@ function Move(dir) {
                 let x = 3;
                 for (let i = 3; i >= 0; i--) {
                     if (positions[i][j] !== 0) {
-                        rowString += positions[i][j];
+                        rowString += (positions[i][j]).toString(16);
                         positions[i][j] = 0;
                     }
                 }
                 for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[x][j] = parseInt(rowString[k]);
+                    positions[x][j] = parseInt(rowString[k], 16);
                     if (x !== 3) {
                         if (positions[x + 1][j] === positions[x][j]) {
                             if (ifAdded[x + 1][j] === 0) {
@@ -124,6 +127,7 @@ function Move(dir) {
                                 positions[x][j] = 0;
                                 ifAdded[x + 1][j] = 1;
                                 score += Math.pow(2, positions[x + 1][j]);
+                                pointsThisRound += Math.pow(2, positions[x + 1][j]);
                             } else {
                                 x--;
                             }
@@ -144,12 +148,12 @@ function Move(dir) {
                 let x = 3;
                 for (let j = 3; j >= 0; j--) {
                     if (positions[i][j] !== 0) {
-                        rowString += positions[i][j];
+                        rowString += (positions[i][j]).toString(16);
                         positions[i][j] = 0;
                     }
                 }
                 for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[i][x] = parseInt(rowString[k]);
+                    positions[i][x] = parseInt(rowString[k], 16);
                     if (x !== 3) {
                         if (positions[i][x + 1] === positions[i][x]) {
                             if (ifAdded[i][x + 1] === 0) {
@@ -157,6 +161,7 @@ function Move(dir) {
                                 positions[i][x] = 0;
                                 ifAdded[i][x + 1] = 1;
                                 score += Math.pow(2, positions[i][x + 1]);
+                                pointsThisRound += Math.pow(2, positions[i][x + 1]);
                             } else {
                                 x--;
                             }
@@ -176,12 +181,12 @@ function Move(dir) {
                 let x = 0;
                 for (let j = 0; j < 4; j++) {
                     if (positions[i][j] !== 0) {
-                        rowString += positions[i][j];
+                        rowString += (positions[i][j]).toString(16);
                         positions[i][j] = 0;
                     }
                 }
                 for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[i][x] = parseInt(rowString[k]);
+                    positions[i][x] = parseInt(rowString[k], 16);
                     if (x !== 0) {
                         if (positions[i][x - 1] === positions[i][x]) {
                             if (ifAdded[i][x - 1] === 0) {
@@ -189,6 +194,7 @@ function Move(dir) {
                                 positions[i][x] = 0;
                                 ifAdded[i][x - 1] = 1;
                                 score += Math.pow(2, positions[i][x - 1]);
+                                pointsThisRound += Math.pow(2, positions[i][x - 1]);
                             } else {
                                 x++;
                             }
@@ -221,6 +227,7 @@ function Draw() {
                     $("#s" + i + j).children().addClass("justAdded");
                 }
             }
+            
         }
     }
 }
@@ -286,6 +293,8 @@ function isGameOver() {
 
 
 $("body").keyup(function(event) {
+    $('.thisRoundPoints').remove();
+    pointsThisRound = 0;
     let key = event.key;
     
     for (let i = 0; i < 4; i++) {
@@ -335,6 +344,13 @@ $("body").keyup(function(event) {
         }
     }
     
+    if (pointsThisRound) {
+        $("#currentScore").append("<div class = \"thisRoundPoints\">+" + pointsThisRound + "</div>");
+
+        $('.thisRoundPoints').bind('animationend', function(e) { 
+            $(this).remove(); 
+        });
+    }
 });
 
 $(".newGameButton").click(function() {

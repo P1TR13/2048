@@ -9,6 +9,7 @@ body {
     overflow: hidden;
 }
 
+
 #container {
     width: 462.55px;
     height: 100vh;
@@ -49,6 +50,7 @@ body {
     border-radius: 4px;
     margin: 0 2px;
     text-align: center;
+    justify-content: center;
 }
 
 .name {
@@ -62,6 +64,15 @@ body {
 
 p {
     margin: 0;
+}
+
+.thisRoundPoints {
+    margin-top: -30px;
+    font-size: 24px;
+    color: #776e65;
+    animation: moveUp 1.2s;
+    display: relative;
+    z-index: 2;
 }
 
 #newGame {
@@ -111,6 +122,7 @@ p {
     font-size: 60px;
     background-color: #ffffff7a;
     z-index: 2;
+    animation: fadeIn 2s;
 }
 
 #gameOver p {
@@ -138,7 +150,6 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    
 }
 
 .n2 {
@@ -189,6 +200,26 @@ p {
     color: #f9f6f2;
 }
 
+.n2048 {
+    background-color: #edc42e;
+    color: #f9f6f2;
+}
+
+.n4096 {
+    background-color: #fc726c;
+    color: #f9f6f2;
+}
+
+.n8192 {
+    background-color: #fc5c59;
+    color: #f9f6f2;
+}
+
+.n16384 {
+  background-color: #f05139;
+  color: #f9f6f2;
+}
+
 .justCreated {
     animation: createAnimation 300ms;
 }
@@ -197,14 +228,36 @@ p {
     animation: addAnimation 300ms;
 }
 
+@keyframes moveUp {
+    0% {
+        opacity: 1;
+        margin-top: -30px;
+    }
+    100% {
+        opacity: 0;
+        margin-top: -100px;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }    
+    100% {
+        opacity: 1;
+    }
+}
+
 @keyframes createAnimation {
     0% {
         height: 0%;
         width: 0%;
+        font-size: 0px;
     }
     100% {
         height: 100%;
         width: 100%;
+        font-size: 55px;
     }
 }
 
@@ -212,15 +265,18 @@ p {
     0% {
         height: 100%;
         width: 100%;
+        font-size: 55px;
     }
 
     50% {
         height: 120%;
         width: 120%;
+        font-size: 66px;
     }
 
     100% {
         height: 100%;
         width: 100%;
+        font-size: 55px;
     }
 }
