@@ -40,6 +40,8 @@ if(localStorage.getItem("bestScore") > 0) {
 }
 
 
+
+
 $("#newGame").append("<button class = \"newGameButton\">New Game</button>");
 
 function FirstRandom() {
@@ -59,15 +61,29 @@ function FirstRandom() {
         let x = place[0];
         let y = place[1];
         positions[x][y] = parseInt(randomNumber);
-        
+        localStorage.setItem("position", positions);
+        localStorage.setItem("currentScore", parseInt($("#currentScore").children(".score").html()));
     } else {
         FirstRandom();
     }
 
 }
 
-FirstRandom();
-FirstRandom();
+if(localStorage.getItem("position")) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            positions[i][j] = parseInt(localStorage.getItem("position")[2 * (i * 4 + j)])
+        }
+    }
+    Draw();
+    if(localStorage.getItem("currentScore")) {
+        $("#currentScore").children(".score").html(localStorage.getItem("currentScore"));
+    }
+} else {
+    FirstRandom();
+    FirstRandom();
+}
+
 
 var pointsThisRound = 0;
 
