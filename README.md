@@ -25,6 +25,7 @@ Project is created with:
 * Game over
 * values up to 16384
 #### To do:
+* Undo button
 * Animations for blocks:
   * moving
 * mobile-friendly
