@@ -25,6 +25,7 @@ var positionBefore = [[0, 0, 0, 0],
 [0, 0, 0, 0]];
 
 var isNotFirstMove = 0;
+var lastAddedPoints = 0;
 
 var NotGameOver = 1;
 
@@ -347,6 +348,10 @@ function isGameOver() {
                     }
                     Draw();
                     NotGameOver = 1;
+                    if (localStorage.getItem("lastPoints")) {
+                        let score = localStorage.getItem("lastPoints");
+                        $("#currentScore").children(".score").html(score);
+                    }
                 }
             });
         }
@@ -416,6 +421,10 @@ $("body").keyup(function(event) {
             $(this).remove(); 
         });
     }
+
+    let score = parseInt($("#currentScore").children(".score").html());
+    lastAddedPoints = score - pointsThisRound;
+    localStorage.setItem("lastPoints", lastAddedPoints);
 });
 
 $(".newGameButton").click(function() {
@@ -451,6 +460,11 @@ $(".undoButton").click(function() {
             }
         }
         localStorage.setItem("position", positions);
+        if (localStorage.getItem("lastPoints")) {
+            let score = localStorage.getItem("lastPoints");
+            $("#currentScore").children(".score").html(score);
+        }
+        
         Draw();
     }
 });
