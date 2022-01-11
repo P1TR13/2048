@@ -19,6 +19,23 @@ var isEnd = [[0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0],
 [0, 0, 0, 0, 0, 0]];
 
+var positionBefore = [[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0],
+[0, 0, 0, 0]];
+
+var isNotFirstMove = 0;
+
+var NotGameOver = 1;
+
+if (localStorage.getItem("positionBefore")) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            positionBefore[i][j] = parseInt(localStorage.getItem("positionBefore")[i * 4 + j]);
+        }
+    }
+}
+
 
 $("body").append("<div id = \"container\"></div>");
 
@@ -42,7 +59,7 @@ if(localStorage.getItem("bestScore") > 0) {
 
 
 
-$("#newGame").append("<button class = \"newGameButton\">New Game</button>");
+$("#newGame").append("<button class = \"undoButton\">Undo</button>").append("<button class = \"newGameButton\">New Game</button>");
 
 function FirstRandom() {
     let place = Math.floor(Math.random() * 16).toString();
@@ -88,6 +105,22 @@ if(localStorage.getItem("position")) {
 var pointsThisRound = 0;
 
 function Move(dir) {
+    if (NotGameOver) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                positionBefore[i][j] = positions[i][j];
+            }
+        }
+        let posB = "";
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                posB += positionBefore[i][j];
+            }
+        }
+        localStorage.setItem("positionBefore", posB);
+    }
+    
+
     let score = parseInt($("#currentScore").children(".score").html());
     switch(dir) {
         case 1:
@@ -230,6 +263,7 @@ function Move(dir) {
         $("#bestScore").children(".score").html(score);
         localStorage.setItem("bestScore", score);
     }
+    isNotFirstMove = 1;
 }
 
 function Draw() {
@@ -276,7 +310,8 @@ function isGameOver() {
 
     if(!howMany) {
         if ($("#end").children().length == 0) {
-            $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButton\">Try again</button></div>");
+            NotGameOver = 0;
+            $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButton\">Try again</button> <button class =\"undoButton\">Undo</button></div>");
             $(".newGameButton").click(function() {
                 $("#gameOver").remove();
             
@@ -299,6 +334,20 @@ function isGameOver() {
                 Draw();
                 FirstRandom();
                 FirstRandom();
+                NotGameOver = 1;
+            });
+
+            $(".undoButton").click(function() {
+                $("#gameOver").remove();
+                if (isNotFirstMove) {
+                    for (let i = 0; i < 4; i++) {
+                        for (let j = 0; j < 4; j++) {
+                            positions[i][j] = positionBefore[i][j];
+                        }
+                    }
+                    Draw();
+                    NotGameOver = 1;
+                }
             });
         }
         
@@ -318,7 +367,7 @@ $("body").keyup(function(event) {
             lastPosition[i][j] = positions[i][j];
         }
     }
-    
+
     switch(key) {
         case "ArrowUp":
             Move(1);
@@ -391,4 +440,24 @@ $(".newGameButton").click(function() {
     Draw();
     FirstRandom();
     FirstRandom();
+    isNotFirstMove = 0;
 });
+
+$(".undoButton").click(function() {
+    if (isNotFirstMove) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                positions[i][j] = positionBefore[i][j];
+            }
+        }
+        Draw();
+    }
+});
+
+for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+        if (positions[i][j] != 0) {
+            isNotFirstMove = 1;
+        }
+    }
+}

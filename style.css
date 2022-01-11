@@ -84,7 +84,7 @@ p {
     grid-column: span 2;
 }
 
-.newGameButton {
+.newGameButton, .undoButton {
     background-color: #8f7a66;
     border: none;
     color: #faf8ef;
@@ -95,8 +95,13 @@ p {
     border-radius: 4px;
 }
 
-.newGameButton:hover {
+.newGameButton:hover, .undoButton:hover {
     cursor: pointer;
+}
+
+.undoButton {
+    margin-right: 20px;
+    width: 100px;
 }
 
 #grid {
@@ -198,26 +203,31 @@ p {
 .n1024 {
     background-color: #ddad37;
     color: #f9f6f2;
+    font-size: 40px;
 }
 
 .n2048 {
     background-color: #edc42e;
     color: #f9f6f2;
+    font-size: 40px;
 }
 
 .n4096 {
     background-color: #fc726c;
     color: #f9f6f2;
+    font-size: 40px;
 }
 
 .n8192 {
     background-color: #fc5c59;
     color: #f9f6f2;
+    font-size: 40px;
 }
 
 .n16384 {
   background-color: #f05139;
   color: #f9f6f2;
+  font-size: 30px;
 }
 
 .justCreated {
