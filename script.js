@@ -450,6 +450,7 @@ $(".undoButton").click(function() {
                 positions[i][j] = positionBefore[i][j];
             }
         }
+        localStorage.setItem("position", positions);
         Draw();
     }
 });
