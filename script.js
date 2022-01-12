@@ -78,8 +78,16 @@ function FirstRandom() {
         $(random).removeClass("free").append("<div class = \" justCreated block n" + power + "\">" + power + "</div>");
         let x = place[0];
         let y = place[1];
+        random = random.toString(16);
         positions[x][y] = parseInt(randomNumber);
-        localStorage.setItem("position", positions);
+        let pos = "";
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                pos += positions[i][j].toString(16);
+            }
+        }
+        
+        localStorage.setItem("position", pos);
         localStorage.setItem("currentScore", parseInt($("#currentScore").children(".score").html()));
     } else {
         FirstRandom();
@@ -90,7 +98,7 @@ function FirstRandom() {
 if(localStorage.getItem("position")) {
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
-            positions[i][j] = parseInt(localStorage.getItem("position")[2 * (i * 4 + j)])
+            positions[i][j] = parseInt(localStorage.getItem("position")[(i * 4 + j)], 16)
         }
     }
     Draw();
@@ -456,10 +464,16 @@ $(".undoButton").click(function() {
     if (isNotFirstMove) {
         for (let i = 0; i < 4; i++) {
             for (let j = 0; j < 4; j++) {
-                positions[i][j] = positionBefore[i][j];
+                positions[i][j] = positionBefore[i][j].toString();
             }
         }
-        localStorage.setItem("position", positions);
+        let pos = "";
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                pos += positions[i][j].toString(16);
+            }
+        }
+        localStorage.setItem("position", pos);
         if (localStorage.getItem("lastPoints")) {
             let score = localStorage.getItem("lastPoints");
             $("#currentScore").children(".score").html(score);
