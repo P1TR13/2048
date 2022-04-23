@@ -1,12 +1,27 @@
-let board = document.getElementById('board');
+const boardSize = 16;
 
-function makeBoard() {
-    for (let i = 0; i < 16; i++) {
-        let emptySquare = document.createElement('div');
-        emptySquare.classList.add('square');
-        board.appendChild(emptySquare);
+let positions = {
+    currentPosition: [],
+    lastPosition: [],
+    ifItemsWereAdded: [],
+};
+
+function makeBoardWithEmptySquares() {
+    for (let i = 0; i < boardSize; i++) {
+        $('#board').append('<div class = \'square\'> </div>')
     }
+    makeEmptyPositions();
+}
+
+function makeEmptyPositions() {
+    for (let i = 0; i < boardSize; i++) {
+        positions.currentPosition[i] = 0;
+        positions.lastPosition[i] = 0;
+        positions.ifItemsWereAdded[i] = 0;
+    }
+
+    console.log(positions);
 }
 
 // On Load
-makeBoard();
+makeBoardWithEmptySquares();
