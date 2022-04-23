@@ -42,7 +42,7 @@ body {
     justify-content: right;
 }
 
-#currentScore, #bestScore {
+#currentScoreBox, #bestScoreBox {
     background-color: #bbada0;
     color: #faf8ef;
     height: 45px; /*TO CHANGE*/
@@ -84,7 +84,7 @@ p {
     grid-column: span 2;
 }
 
-.newGameButton, .undoButton {
+#newGameButton, #undoButton {
     background-color: #8f7a66;
     border: none;
     color: #faf8ef;
@@ -95,11 +95,11 @@ p {
     border-radius: 4px; /*TO CHANGE*/
 }
 
-.newGameButton:hover, .undoButton:hover {
+#newGameButton:hover, #undoButton:hover {
     cursor: pointer;
 }
 
-.undoButton {
+#undoButton {
     margin-right: 20px; /*TO CHANGE*/
     width: 100px; /*TO CHANGE*/
 }
