@@ -1,11 +1,12 @@
 const boardSize = 16;
 let currentScore = 0;
-let activeBlocks = [];
+let activeBlocks = {};
 
 let positions = {
     currentPosition: [],
     lastPosition: [],
     ifItemsWereAdded: [],
+    blocksToMove: [],
 };
 
 class block {
@@ -19,13 +20,29 @@ class block {
     }
 
     moveUp(direction) {
-        if (direction == 1) console.log("Move up");
+        positions.blocksToMove = [];
+
+        if (direction) console.log("Move up");
         else console.log("Move down");
     }
 
     moveRight(direction) {
-        if (direction == 1) console.log("Move right");
-        else console.log("Move left");
+        positions.blocksToMove = [];
+
+        if (direction) {
+            this.move(3, -1);
+        } else {
+            this.move(0, 1);
+        }
+    }
+
+    move(from, direction) {
+        if(this.position != Math.floor(this.position / 4) * 4 + from) {
+            activeBlocks[this.position] = '';
+            this.position = Math.floor(this.position / 4) * 4 + from
+            while (activeBlocks[this.position]) this.position += direction;
+            activeBlocks[this.position] = this;
+        }
     }
 }
 
@@ -49,7 +66,7 @@ function initialPosition() {
         positions.ifItemsWereAdded[i] = 0;
     }
 
-    while (activeBlocks.length) activeBlocks.pop();
+    activeBlocks = {};
 
     currentScore = 0;
     $('#currentScore').html(currentScore);
@@ -69,7 +86,7 @@ function makeBlock(howManyBlocks) {
             newBlock.createBlock(positionForNewBlock);
             positions.currentPosition[positionForNewBlock] = numberForNewBlock;
         
-            activeBlocks.push(newBlock);
+            activeBlocks[positionForNewBlock] = newBlock;
         }
         else {
             makeBlock(1);
@@ -83,13 +100,13 @@ function checkIfSquareIsEmpty(squareID) {
 
 function addMovementToBlock(event) {
     let key = event.key;
-    activeBlocks.forEach(oneBlock => {
-        console.log(oneBlock);
-        if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
-        else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(-1);
-        else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
-        else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(-1);
-
+    Object.values(activeBlocks).forEach(oneBlock => {
+        if (oneBlock != '') {
+            if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
+            else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(0);
+            else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
+            else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(0);
+        }
     });
 }
 
