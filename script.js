@@ -24,23 +24,38 @@ class block {
 
         if (direction) console.log("Move up");
         else console.log("Move down");
+
+        if (direction) {
+            this.moveVer(0, -1);
+        } else {
+            this.moveVer(3, 1);
+        }
     }
 
     moveRight(direction) {
         positions.blocksToMove = [];
 
         if (direction) {
-            this.move(3, -1);
+            this.moveHor(3, -1);
         } else {
-            this.move(0, 1);
+            this.moveHor(0, 1);
         }
     }
 
-    move(from, direction) {
+    moveHor(from, direction) {
         if(this.position != Math.floor(this.position / 4) * 4 + from) {
             activeBlocks[this.position] = '';
             this.position = Math.floor(this.position / 4) * 4 + from
             while (activeBlocks[this.position]) this.position += direction;
+            activeBlocks[this.position] = this;
+        }
+    }
+
+    moveVer(from, direction) {
+        if(this.position != Math.floor(this.position % 4) + from * 4) {
+            activeBlocks[this.position] = '';
+            this.position = Math.floor(this.position % 4) + from * 4
+            while (activeBlocks[this.position]) this.position += direction * 4;
             activeBlocks[this.position] = this;
         }
     }
@@ -105,19 +120,21 @@ function addMovementToBlock(event) {
             if (oneBlock != '') oneBlock.moveRight(1);
         });
     }
-    if (key == "ArrowLeft" || key == "a") {
+    else if (key == "ArrowLeft" || key == "a") {
         Object.values(activeBlocks).forEach(oneBlock => {
             if (oneBlock != '') oneBlock.moveRight(0);
         });
     }
-    // Object.values(activeBlocks).forEach(oneBlock => {
-    //     if (oneBlock != '') {
-    //         if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
-    //         else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(0);
-    //         else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
-    //         else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(0);
-    //     }
-    // });
+    else if (key == "ArrowDown" || key == "s") {
+        Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveUp(0);
+        });
+    }
+    else if (key == "ArrowUp" || key == "w") {
+        Object.values(activeBlocks).forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveUp(1);
+        });
+    }
 }
 
 function gettingRandomNumber(from, to) {
