@@ -100,14 +100,24 @@ function checkIfSquareIsEmpty(squareID) {
 
 function addMovementToBlock(event) {
     let key = event.key;
-    Object.values(activeBlocks).forEach(oneBlock => {
-        if (oneBlock != '') {
-            if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
-            else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(0);
-            else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
-            else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(0);
-        }
-    });
+    if (key == "ArrowRight" || key == "d") {
+        Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveRight(1);
+        });
+    }
+    if (key == "ArrowLeft" || key == "a") {
+        Object.values(activeBlocks).forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveRight(0);
+        });
+    }
+    // Object.values(activeBlocks).forEach(oneBlock => {
+    //     if (oneBlock != '') {
+    //         if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
+    //         else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(0);
+    //         else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
+    //         else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(0);
+    //     }
+    // });
 }
 
 function gettingRandomNumber(from, to) {
