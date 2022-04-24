@@ -1,5 +1,6 @@
 const boardSize = 16;
 let currentScore = 0;
+let activeBlocks = [];
 
 let positions = {
     currentPosition: [],
@@ -17,12 +18,12 @@ class block {
     }
 
     moveUp(direction) {
-        if (direction) console.log("Move up");
+        if (direction == 1) console.log("Move up");
         else console.log("Move down");
     }
 
     moveRight(direction) {
-        if (direction) console.log("Move right");
+        if (direction == 1) console.log("Move right");
         else console.log("Move left");
     }
 }
@@ -31,9 +32,13 @@ function makeBoardWithEmptySquares() {
     for (let i = 0; i < boardSize; i++) {
         $('#board').append('<div class = \'square\' id = \'square' + i + '\'> </div>')
     }
+    clearBoardAndStartNewGame();
+}
+
+function clearBoardAndStartNewGame() {
+    $('.block').remove();
     initialPosition();
-    $('#newGameButton').click(initialPosition);
-    makeBlock();
+    makeBlock(2);
 }
 
 function initialPosition() {
@@ -43,47 +48,36 @@ function initialPosition() {
         positions.ifItemsWereAdded[i] = 0;
     }
 
+    for (let i = 0 ; i < activeBlocks.length; i++) {
+        activeBlocks.pop();
+    }
+
     currentScore = 0;
     $('#currentScore').html(currentScore);
     $('#newGameButton').html('New Game');
 }
 
-function makeBlock() {
-    let newBlock = new block(gettingRandomNumber(1, 2));
-    newBlock.createBlock(gettingRandomNumber(0, 16));
-    addMovingToBlock(newBlock);
+function makeBlock(howManyBlocks) {
+    for (let i = 0; i < howManyBlocks; i++) {
+        let positionForNewBlock = gettingRandomNumber(0, 16);
+        let numberForNewBlock = gettingRandomNumber(1, 2);
+        let newBlock = new block(numberForNewBlock);
+        newBlock.createBlock(positionForNewBlock);
+        positions.currentPosition[positionForNewBlock] = numberForNewBlock;
+    
+        activeBlocks.push(newBlock);
+    }
 }
 
-function addMovingToBlock(block) {
-    $('body').keyup(function(event) {
-        let key = event.key;
-        console.log(key);
-        switch(key) {
-            case "ArrowUp":
-                block.moveUp(1);
-                break;
-            case "w":
-                block.moveUp(1);
-                break;
-            case "ArrowDown":
-                block.moveUp(-1);
-                break;
-            case "s":
-                block.moveUp(-1);
-                break;
-            case "ArrowRight":
-                block.moveRight(1);
-                break;
-            case "d":
-                block.moveRight(1);
-                break;
-            case "ArrowLeft":
-                block.moveRight(-1);
-                break;
-            case "a":
-                block.moveRight(-1);
-                break;
-        }
+function addMovementToBlock(event) {
+    let key = event.key;
+    activeBlocks.forEach(oneBlock => {
+        console.log(oneBlock);
+        if (key == "ArrowUp" || key == "w") oneBlock.moveUp(1);
+        else if (key == "ArrowDown" || key == "s") oneBlock.moveUp(-1);
+        else if (key == "ArrowRight" || key == "d") oneBlock.moveRight(1);
+        else if (key == "ArrowLeft" || key == "a") oneBlock.moveRight(-1);
+
     });
 }
 
@@ -94,3 +88,7 @@ function gettingRandomNumber(from, to) {
 
 // On Load
 makeBoardWithEmptySquares();
+$('#newGameButton').click(clearBoardAndStartNewGame);
+$('body').keyup(function(event) {
+    addMovementToBlock(event);
+});
