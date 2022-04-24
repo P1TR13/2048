@@ -9,8 +9,9 @@ let positions = {
 };
 
 class block {
-    constructor(number) {
+    constructor(number, position) {
         this.number = Math.pow(2, number);
+        this.position = position;
     }
 
     createBlock(squareID) {
@@ -48,9 +49,7 @@ function initialPosition() {
         positions.ifItemsWereAdded[i] = 0;
     }
 
-    for (let i = 0 ; i < activeBlocks.length; i++) {
-        activeBlocks.pop();
-    }
+    while (activeBlocks.length) activeBlocks.pop();
 
     currentScore = 0;
     $('#currentScore').html(currentScore);
@@ -59,14 +58,27 @@ function initialPosition() {
 
 function makeBlock(howManyBlocks) {
     for (let i = 0; i < howManyBlocks; i++) {
+        
         let positionForNewBlock = gettingRandomNumber(0, 16);
-        let numberForNewBlock = gettingRandomNumber(1, 2);
-        let newBlock = new block(numberForNewBlock);
-        newBlock.createBlock(positionForNewBlock);
-        positions.currentPosition[positionForNewBlock] = numberForNewBlock;
-    
-        activeBlocks.push(newBlock);
+        if (!checkIfSquareIsEmpty(positionForNewBlock)){
+            let numberForNewBlock = gettingRandomNumber(0, 10);
+            if (numberForNewBlock == 9) numberForNewBlock = 2;
+            else numberForNewBlock = 1;
+
+            let newBlock = new block(numberForNewBlock, positionForNewBlock);
+            newBlock.createBlock(positionForNewBlock);
+            positions.currentPosition[positionForNewBlock] = numberForNewBlock;
+        
+            activeBlocks.push(newBlock);
+        }
+        else {
+            makeBlock(1);
+        }
     }
+}
+
+function checkIfSquareIsEmpty(squareID) {
+    return $('#square' + squareID).children().length;
 }
 
 function addMovementToBlock(event) {
