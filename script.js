@@ -1,5 +1,6 @@
 const boardSize = 16;
 let currentScore = 0;
+let ifChanged = 0;
 let activeBlocks = {};
 
 let positions = {
@@ -13,10 +14,11 @@ class block {
     constructor(number, position) {
         this.number = Math.pow(2, number);
         this.position = position;
+        this.added = 0;
     }
 
     createBlock(squareID) {
-        $('#square' + squareID).append('<div class = \'block n' + this.number + '\'>' + this.number + '</div>')
+        $('#square' + squareID).append('<div class = \'justCreated block n' + this.number + '\'>' + this.number + '</div>')
     }
 
     moveUp(direction) {
@@ -24,9 +26,9 @@ class block {
         positions.blocksToMove = [];
 
         if (direction) {
-            this.moveVertical(0, 1);
+            this.moveVertical(0, -1);
         } else {
-            this.moveVertical(3, -1);
+            this.moveVertical(3, 1);
         }
 
         this.changeParent();
@@ -37,30 +39,44 @@ class block {
         positions.blocksToMove = [];
 
         if (direction) {
-            this.moveHorizontal(3, -1);
+            this.moveHorizontal(3, 1);
         } else {
-            this.moveHorizontal(0, 1);
+            this.moveHorizontal(0, -1);
         }
 
         this.changeParent();
     }
 
     moveHorizontal(from, direction) {
-        if(this.position != Math.floor(this.position / 4) * 4 + from) {
+        this.added = 0;
+        while (this.position != Math.floor(this.position / 4) * 4 + from && !activeBlocks[this.position + direction]) {
             activeBlocks[this.position] = '';
-            this.position = Math.floor(this.position / 4) * 4 + from
-            while (activeBlocks[this.position]) this.position += direction;
+            this.position += direction;
+            ifChanged = 1;
             activeBlocks[this.position] = this;
         }
+        if (this.position != Math.floor(this.position / 4) * 4 + from && activeBlocks[this.position + direction].number == activeBlocks[this.position].number) if(!activeBlocks[this.position + direction].added) this.add(direction, 1);
     }
 
     moveVertical(from, direction) {
-        if(this.position != Math.floor(this.position % 4) + from * 4) {
+        this.added = 0;
+        while (this.position != Math.floor(this.position % 4) + from * 4 && !activeBlocks[this.position + direction * 4]) {
             activeBlocks[this.position] = '';
-            this.position = Math.floor(this.position % 4) + from * 4
-            while (activeBlocks[this.position]) this.position += (direction * 4);
+            this.position += direction * 4;
+            ifChanged = 1;
             activeBlocks[this.position] = this;
         }
+        if (this.position != Math.floor(this.position % 4) + from * 4 && activeBlocks[this.position + direction * 4].number == activeBlocks[this.position].number) if (!activeBlocks[this.position + direction * 4].added) this.add(direction, 4);
+    }
+
+    add(direction, destination) {
+        activeBlocks[this.position] = '';
+        this.position += direction * destination;
+        this.number += this.number;
+        this.added = 1;
+        activeBlocks[this.position] = this;
+        $('#square' + this.position).empty();
+        ifChanged = 1;
     }
 
     changeParent() {
@@ -121,26 +137,31 @@ function checkIfSquareIsEmpty(squareID) {
 }
 
 function addMovementToBlock(event) {
+    ifChanged = 0;
     let key = event.key;
     if (key == "ArrowRight" || key == "d") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
-            if (oneBlock != '') oneBlock.moveRight(1);
+            if (oneBlock != '') {oneBlock.moveRight(1); console.log("oneblock" + oneBlock);}
         });
+        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowLeft" || key == "a") {
         Object.values(activeBlocks).forEach(oneBlock => {
-            if (oneBlock != '') oneBlock.moveRight(0);
+            if (oneBlock != '') {oneBlock.moveRight(0); console.log("oneblock" + oneBlock);}
         });
+        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowDown" || key == "s") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
-            if (oneBlock != '') oneBlock.moveUp(0);
+            if (oneBlock != '') {oneBlock.moveUp(0); console.log("oneblock" + oneBlock);}
         });
+        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowUp" || key == "w") {
         Object.values(activeBlocks).forEach(oneBlock => {
-            if (oneBlock != '') oneBlock.moveUp(1);
+            if (oneBlock != '') {oneBlock.moveUp(1); console.log("oneblock" + oneBlock);}
         });
+        if(ifChanged) makeBlock(1);
     }
 }
 
