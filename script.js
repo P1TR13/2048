@@ -1,7 +1,13 @@
 const boardSize = 16;
-let currentScore = 0;
 let ifChanged = 0;
 let activeBlocks = {};
+
+let score = {
+    current: 0,
+    move: 0,
+    best: 0,
+    last: 0,
+};
 
 let positions = {
     currentPosition: [],
@@ -77,10 +83,12 @@ class block {
         activeBlocks[this.position] = this;
         $('#square' + this.position).empty();
         ifChanged = 1;
+        score.move += this.number;
     }
 
     changeParent() {
         $('#square' + this.position).append('<div class = \'block n' + this.number + '\'>' + this.number + '</div>');
+        if (this.added) $('#square' + this.position).children().addClass('justAdded');
     }
 }
 
@@ -141,28 +149,30 @@ function addMovementToBlock(event) {
     let key = event.key;
     if (key == "ArrowRight" || key == "d") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
-            if (oneBlock != '') {oneBlock.moveRight(1); console.log("oneblock" + oneBlock);}
+            if (oneBlock != '') oneBlock.moveRight(1);
         });
         if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowLeft" || key == "a") {
         Object.values(activeBlocks).forEach(oneBlock => {
-            if (oneBlock != '') {oneBlock.moveRight(0); console.log("oneblock" + oneBlock);}
+            if (oneBlock != '') oneBlock.moveRight(0);
         });
         if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowDown" || key == "s") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
-            if (oneBlock != '') {oneBlock.moveUp(0); console.log("oneblock" + oneBlock);}
+            if (oneBlock != '') oneBlock.moveUp(0);
         });
         if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowUp" || key == "w") {
         Object.values(activeBlocks).forEach(oneBlock => {
-            if (oneBlock != '') {oneBlock.moveUp(1); console.log("oneblock" + oneBlock);}
+            if (oneBlock != '') oneBlock.moveUp(1);
         });
         if(ifChanged) makeBlock(1);
     }
+    score.current += score.move;
+    score.move = 0;
 }
 
 function gettingRandomNumber(from, to) {
