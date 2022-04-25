@@ -20,29 +20,32 @@ class block {
     }
 
     moveUp(direction) {
+        $('#square' + this.position).empty();
         positions.blocksToMove = [];
 
-        if (direction) console.log("Move up");
-        else console.log("Move down");
-
         if (direction) {
-            this.moveVer(0, -1);
+            this.moveVertical(0, 1);
         } else {
-            this.moveVer(3, 1);
+            this.moveVertical(3, -1);
         }
+
+        this.changeParent();
     }
 
     moveRight(direction) {
+        $('#square' + this.position).empty();
         positions.blocksToMove = [];
 
         if (direction) {
-            this.moveHor(3, -1);
+            this.moveHorizontal(3, -1);
         } else {
-            this.moveHor(0, 1);
+            this.moveHorizontal(0, 1);
         }
+
+        this.changeParent();
     }
 
-    moveHor(from, direction) {
+    moveHorizontal(from, direction) {
         if(this.position != Math.floor(this.position / 4) * 4 + from) {
             activeBlocks[this.position] = '';
             this.position = Math.floor(this.position / 4) * 4 + from
@@ -51,13 +54,17 @@ class block {
         }
     }
 
-    moveVer(from, direction) {
+    moveVertical(from, direction) {
         if(this.position != Math.floor(this.position % 4) + from * 4) {
             activeBlocks[this.position] = '';
             this.position = Math.floor(this.position % 4) + from * 4
-            while (activeBlocks[this.position]) this.position += direction * 4;
+            while (activeBlocks[this.position]) this.position += (direction * 4);
             activeBlocks[this.position] = this;
         }
+    }
+
+    changeParent() {
+        $('#square' + this.position).append('<div class = \'block n' + this.number + '\'>' + this.number + '</div>');
     }
 }
 
