@@ -203,14 +203,7 @@ function showGainedPoints() {
 function moveBackToTheLastPosition() {
     $('.block').remove();
     activeBlocks = JSON.parse(JSON.stringify(lastPosition.lastPosition));
-    Object.values(lastPosition.lastPosition).forEach(oneBlock => {
-        if (oneBlock.position >= 0 && oneBlock.position <= 15) {
-            let newBlock = new block(Math.log2(oneBlock.number), oneBlock.position);
-            newBlock.createBlock(oneBlock.position);
-
-            activeBlocks[oneBlock.position] = newBlock;
-        }
-    });
+    makePosition();
     score.current = lastPosition.lastScore;
     $('#currentScoreBox').children('.score').html(score.current);
 }
@@ -225,7 +218,25 @@ function save() {
 }
 
 function load() {
-    
+    score.best = localStorage.getItem('bestScore');
+    $('#bestScoreBox').children('.score').html(score.best);
+    score.last = localStorage.getItem('lastScore');
+    score.current = localStorage.getItem('currentScore');
+    $('#currentScoreBox').children('.score').html(score.current);
+    activeBlocks = JSON.parse(localStorage.getItem('currentPosition'));
+    makePosition();
+    lastPosition.lastPosition = JSON.parse(localStorage.getItem('lastPosition'));
+}
+
+function makePosition() {
+    Object.values(activeBlocks).forEach(oneBlock => {
+        if (oneBlock.position >= 0 && oneBlock.position <= 15) {
+            let newBlock = new block(Math.log2(oneBlock.number), oneBlock.position);
+            newBlock.createBlock(oneBlock.position);
+
+            activeBlocks[oneBlock.position] = newBlock;
+        }
+    });
 }
 
 
