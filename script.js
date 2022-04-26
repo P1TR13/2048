@@ -1,19 +1,18 @@
 const boardSize = 16;
 let ifChanged = 0;
 let activeBlocks = {};
+let lastPosition = {
+    temporaryPositionForLastPosition: {},
+    lastPosition: {},
+    temporaryLastScore: 0,
+    lastScore: 0,
+};
 
 let score = {
     current: 0,
     move: 0,
     best: 0,
     last: 0,
-};
-
-let positions = {
-    currentPosition: [],
-    lastPosition: [],
-    ifItemsWereAdded: [],
-    blocksToMove: [],
 };
 
 class block {
@@ -29,7 +28,6 @@ class block {
 
     moveUp(direction) {
         $('#square' + this.position).empty();
-        positions.blocksToMove = [];
 
         if (direction) {
             this.moveVertical(0, -1);
@@ -42,7 +40,6 @@ class block {
 
     moveRight(direction) {
         $('#square' + this.position).empty();
-        positions.blocksToMove = [];
 
         if (direction) {
             this.moveHorizontal(3, 1);
@@ -103,19 +100,14 @@ function clearBoardAndStartNewGame() {
     $('.block').remove();
     initialPosition();
     makeBlock(2);
+    lastPosition.lastPosition = JSON.parse(JSON.stringify(activeBlocks));
 }
 
 function initialPosition() {
-    for (let i = 0; i < boardSize; i++) {
-        positions.currentPosition[i] = 0;
-        positions.lastPosition[i] = 0;
-        positions.ifItemsWereAdded[i] = 0;
-    }
-
     activeBlocks = {};
 
-    currentScore = 0;
-    $('#currentScore').html(currentScore);
+    score.current = 0;
+    $('#currentScore').html(score.current);
     $('#newGameButton').html('New Game');
 }
 
@@ -130,7 +122,6 @@ function makeBlock(howManyBlocks) {
 
             let newBlock = new block(numberForNewBlock, positionForNewBlock);
             newBlock.createBlock(positionForNewBlock);
-            positions.currentPosition[positionForNewBlock] = numberForNewBlock;
         
             activeBlocks[positionForNewBlock] = newBlock;
         }
@@ -146,32 +137,45 @@ function checkIfSquareIsEmpty(squareID) {
 
 function addMovementToBlock(event) {
     ifChanged = 0;
+    lastPosition.temporaryLastScore = lastPosition.lastScore;
+    lastPosition.lastScore = score.current;
+    lastPosition.temporaryPositionForLastPosition = JSON.parse(JSON.stringify(lastPosition.lastPosition));
+    lastPosition.lastPosition = JSON.parse(JSON.stringify(activeBlocks));
+
     let key = event.key;
     if (key == "ArrowRight" || key == "d") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
             if (oneBlock != '') oneBlock.moveRight(1);
         });
-        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowLeft" || key == "a") {
         Object.values(activeBlocks).forEach(oneBlock => {
             if (oneBlock != '') oneBlock.moveRight(0);
         });
-        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowDown" || key == "s") {
         Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
             if (oneBlock != '') oneBlock.moveUp(0);
         });
-        if(ifChanged) makeBlock(1);
     }
     else if (key == "ArrowUp" || key == "w") {
         Object.values(activeBlocks).forEach(oneBlock => {
             if (oneBlock != '') oneBlock.moveUp(1);
         });
-        if(ifChanged) makeBlock(1);
     }
+    if (ifChanged) {
+        makeBlock(1);
+        save();
+    }
+
+    else {
+        lastPosition.lastPosition = JSON.parse(JSON.stringify(lastPosition.temporaryPositionForLastPosition)); 
+        lastPosition.lastScore = lastPosition.temporaryLastScore;
+    }
+
+    score.last = score.current;
     score.current += score.move;
+    showGainedPoints();
     score.move = 0;
 }
 
@@ -179,10 +183,56 @@ function gettingRandomNumber(from, to) {
     return Math.floor(from + Math.random() * to);
 }
 
+function showGainedPoints() {
+    if (score.move) {
+        $('.thisRoundPoints').remove();
+        $('#currentScoreBox').children('.score').html(score.current);
+        $('#currentScoreBox').append('<div class = \'thisRoundPoints\'>+' + score.move + '</div>');
+
+        $('.thisRoundPoints').bind('animationend', function(e) { 
+            $(this).remove(); 
+        });
+    }
+    
+    if (score.current > score.best) {
+        score.best = score.current;
+        $('#bestScoreBox').children('.score').html(score.best);
+    }
+}
+
+function moveBackToTheLastPosition() {
+    $('.block').remove();
+    activeBlocks = JSON.parse(JSON.stringify(lastPosition.lastPosition));
+    Object.values(lastPosition.lastPosition).forEach(oneBlock => {
+        if (oneBlock.position >= 0 && oneBlock.position <= 15) {
+            let newBlock = new block(Math.log2(oneBlock.number), oneBlock.position);
+            newBlock.createBlock(oneBlock.position);
+
+            activeBlocks[oneBlock.position] = newBlock;
+        }
+    });
+    score.current = lastPosition.lastScore;
+    $('#currentScoreBox').children('.score').html(score.current);
+}
+
+function save() {
+    // localStorage: currentPosition = activeBlocks, currentScore = score.current, lastPosition = lastPosition.lastPosition, lastScore = score.last, bestScore = score.best
+    localStorage.setItem('currentPosition', JSON.stringify(activeBlocks));
+    localStorage.setItem('currentScore', score.current);
+    localStorage.setItem('lastPosition', JSON.stringify(lastPosition.lastPosition));
+    localStorage.setItem('lastScore', score.last);
+    localStorage.setItem('bestScore', score.best);
+}
+
+function load() {
+    
+}
+
 
 // On Load
 makeBoardWithEmptySquares();
 $('#newGameButton').click(clearBoardAndStartNewGame);
+$('#undoButton').click(moveBackToTheLastPosition);
 $('body').keyup(function(event) {
     addMovementToBlock(event);
 });
