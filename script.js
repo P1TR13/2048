@@ -97,6 +97,7 @@ function makeBoardWithEmptySquares() {
 }
 
 function clearBoardAndStartNewGame() {
+    $('#end').children().remove();
     $('.block').remove();
     initialPosition();
     makeBlock(2);
@@ -107,6 +108,8 @@ function initialPosition() {
     activeBlocks = {};
 
     score.current = 0;
+    score.last = 0;
+    lastPosition.lastScore = 0;
     $('#currentScore').html(score.current);
     $('#newGameButton').html('New Game');
 }
@@ -201,6 +204,7 @@ function showGainedPoints() {
 }
 
 function moveBackToTheLastPosition() {
+    $('#end').children().remove();
     $('.block').remove();
     activeBlocks = JSON.parse(JSON.stringify(lastPosition.lastPosition));
     makePosition();
@@ -239,6 +243,21 @@ function makePosition() {
     });
 }
 
+function ifMoveIsPossible() {
+    for (let i = 0; i < boardSize; i++) if (!activeBlocks[i]) return true;
+    for (let i = 0; i < boardSize; i++) if (i % 4 != 3) if (activeBlocks[i].number == activeBlocks[i + 1].number) return true;
+    for (let i = 0; i < boardSize; i++) if (i < 11) if (activeBlocks[i].number == activeBlocks[i + 4].number) return true;
+
+    return false;
+}
+
+function endGame() {
+    if ($("#end").children().length == 0) $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButtonStyle\" id = \"endGameNewGameButton\">Try again</button> <button class =\"undoButtonStyle\" id = \"endGameUndoButton\">Undo</button></div>");
+    $("#newGameButton").html('Try Again');
+    $('#endGameNewGameButton').click(clearBoardAndStartNewGame);
+    $('#endGameUndoButton').click(moveBackToTheLastPosition);
+}
+
 
 // On Load
 makeBoardWithEmptySquares();
@@ -246,4 +265,20 @@ $('#newGameButton').click(clearBoardAndStartNewGame);
 $('#undoButton').click(moveBackToTheLastPosition);
 $('body').keyup(function(event) {
     addMovementToBlock(event);
+    if(!ifMoveIsPossible()) endGame();
 });
+
+// if(localStorage.getItem("position")) {
+//     for (let i = 0; i < 4; i++) {
+//         for (let j = 0; j < 4; j++) {
+//             positions[i][j] = parseInt(localStorage.getItem("position")[(i * 4 + j)], 16)
+//         }
+//     }
+//     Draw();
+//     if(localStorage.getItem("currentScore")) {
+//         $("#currentScore").children(".score").html(localStorage.getItem("currentScore"));
+//     }
+// } else {
+//     FirstRandom();
+//     FirstRandom();
+// }

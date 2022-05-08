@@ -84,7 +84,7 @@ p {
     grid-column: span 2;
 }
 
-#newGameButton, #undoButton {
+.newGameButtonStyle, .undoButtonStyle {
     background-color: #8f7a66;
     border: none;
     color: #faf8ef;
@@ -95,11 +95,11 @@ p {
     border-radius: 4px; /*TO CHANGE*/
 }
 
-#newGameButton:hover, #undoButton:hover {
+.newGameButtonStyle:hover, .undoButtonStyle:hover {
     cursor: pointer;
 }
 
-#undoButton {
+.undoButtonStyle {
     margin-right: 20px; /*TO CHANGE*/
     width: 100px; /*TO CHANGE*/
 }
