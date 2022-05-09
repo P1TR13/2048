@@ -1,492 +1,277 @@
-var lastPosition = [[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0]];
+const boardSize = 16;
+let ifChanged = 0;
+let activeBlocks = {};
+let lastPosition = {
+    temporaryPositionForLastPosition: {},
+    lastPosition: {},
+    temporaryLastScore: 0,
+    lastScore: 0,
+};
 
-var positions = [[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0]];
-var ifAdded = [[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0]];
+let score = {
+    current: 0,
+    move: 0,
+    best: 0,
+    last: 0,
+};
 
-var isEnd = [[0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0]];
+class block {
+    constructor(number, position) {
+        this.number = Math.pow(2, number);
+        this.position = position;
+        this.added = 0;
+    }
 
-var positionBefore = [[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0],
-[0, 0, 0, 0]];
+    createBlock(squareID) {
+        $('#square' + squareID).append('<div class = \'justCreated block n' + this.number + '\'>' + this.number + '</div>')
+    }
 
-var isNotFirstMove = 0;
-var lastAddedPoints = 0;
+    moveUp(direction) {
+        $('#square' + this.position).empty();
 
-var NotGameOver = 1;
-
-if (localStorage.getItem("positionBefore")) {
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            positionBefore[i][j] = parseInt(localStorage.getItem("positionBefore")[i * 4 + j]);
+        if (direction) {
+            this.moveVertical(0, -1);
+        } else {
+            this.moveVertical(3, 1);
         }
-    }
-}
 
-
-$("body").append("<div id = \"container\"></div>");
-
-$("#container").append("<div id = \"heading\"></div>").append("<div id =\"end\"></div>").append("<div id = \"grid\"></div>");
-
-for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-        $("#grid").append("<div class = \"square free\" id = \"s" + i + j + "\"></div>");
-    }
-}
-
-
-
-$("#heading").append("<div id = \"title\">2048</div>").append("<div id = \"scores\"></div>").append("<div id = \"newGame\"></div>");
-$("#scores").append("<div id =\"currentScore\"><p class = \"name\">SCORE</p> <p class = \"score\">0</p></div>").append("<div id =\"bestScore\"><p class = \"name\">BEST</p> <p class = \"score\">0</p></div>");
-
-if(localStorage.getItem("bestScore") > 0) {
-    $("#bestScore").children(".score").html(localStorage.getItem("bestScore"));
-}
-
-
-
-
-$("#newGame").append("<button class = \"undoButton\">Undo</button>").append("<button class = \"newGameButton\">New Game</button>");
-
-function FirstRandom() {
-    let place = Math.floor(Math.random() * 16).toString();
-    place = (Math.floor(place/4)).toString() + (place % 4).toString();
-    let random = "#s" + place;
-    let randomNumber = Math.random();
-    if (randomNumber <= 0.9) {
-        randomNumber = "1";
-    } else {
-        randomNumber = "2";
+        this.changeParent();
     }
 
-    if($(random).hasClass("free")) {
-        let power = Math.pow(2, parseInt(randomNumber));
-        $(random).removeClass("free").append("<div class = \" justCreated block n" + power + "\">" + power + "</div>");
-        let x = place[0];
-        let y = place[1];
-        random = random.toString(16);
-        positions[x][y] = parseInt(randomNumber);
-        let pos = "";
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                pos += positions[i][j].toString(16);
-            }
+    moveRight(direction) {
+        $('#square' + this.position).empty();
+
+        if (direction) {
+            this.moveHorizontal(3, 1);
+        } else {
+            this.moveHorizontal(0, -1);
         }
+
+        this.changeParent();
+    }
+
+    moveHorizontal(from, direction) {
+        this.added = 0;
+        while (this.position != Math.floor(this.position / 4) * 4 + from && !activeBlocks[this.position + direction]) {
+            activeBlocks[this.position] = '';
+            this.position += direction;
+            ifChanged = 1;
+            activeBlocks[this.position] = this;
+        }
+        if (this.position != Math.floor(this.position / 4) * 4 + from && activeBlocks[this.position + direction].number == activeBlocks[this.position].number) if(!activeBlocks[this.position + direction].added) this.add(direction, 1);
+    }
+
+    moveVertical(from, direction) {
+        this.added = 0;
+        while (this.position != Math.floor(this.position % 4) + from * 4 && !activeBlocks[this.position + direction * 4]) {
+            activeBlocks[this.position] = '';
+            this.position += direction * 4;
+            ifChanged = 1;
+            activeBlocks[this.position] = this;
+        }
+        if (this.position != Math.floor(this.position % 4) + from * 4 && activeBlocks[this.position + direction * 4].number == activeBlocks[this.position].number) if (!activeBlocks[this.position + direction * 4].added) this.add(direction, 4);
+    }
+
+    add(direction, destination) {
+        activeBlocks[this.position] = '';
+        this.position += direction * destination;
+        this.number += this.number;
+        this.added = 1;
+        activeBlocks[this.position] = this;
+        $('#square' + this.position).empty();
+        ifChanged = 1;
+        score.move += this.number;
+    }
+
+    changeParent() {
+        $('#square' + this.position).append('<div class = \'block n' + this.number + '\'>' + this.number + '</div>');
+        if (this.added) $('#square' + this.position).children().addClass('justAdded');
+    }
+}
+
+function makeBoardWithEmptySquares() {
+    for (let i = 0; i < boardSize; i++) {
+        $('#board').append('<div class = \'square\' id = \'square' + i + '\'> </div>')
+    }
+    clearBoardAndStartNewGame();
+}
+
+function clearBoardAndStartNewGame() {
+    $('#end').children().remove();
+    $('.block').remove();
+    initialPosition();
+    makeBlock(2);
+    lastPosition.lastPosition = JSON.parse(JSON.stringify(activeBlocks));
+}
+
+function initialPosition() {
+    activeBlocks = {};
+
+    score.current = 0;
+    score.last = 0;
+    lastPosition.lastScore = 0;
+    $('#currentScore').html(score.current);
+    $('#newGameButton').html('New Game');
+}
+
+function makeBlock(howManyBlocks) {
+    for (let i = 0; i < howManyBlocks; i++) {
         
-        localStorage.setItem("position", pos);
-        localStorage.setItem("currentScore", parseInt($("#currentScore").children(".score").html()));
-    } else {
-        FirstRandom();
-    }
+        let positionForNewBlock = gettingRandomNumber(0, 16);
+        if (!checkIfSquareIsEmpty(positionForNewBlock)){
+            let numberForNewBlock = gettingRandomNumber(0, 10);
+            if (numberForNewBlock == 9) numberForNewBlock = 2;
+            else numberForNewBlock = 1;
 
-}
-
-if(localStorage.getItem("position")) {
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            positions[i][j] = parseInt(localStorage.getItem("position")[(i * 4 + j)], 16)
-        }
-    }
-    Draw();
-    if(localStorage.getItem("currentScore")) {
-        $("#currentScore").children(".score").html(localStorage.getItem("currentScore"));
-    }
-} else {
-    FirstRandom();
-    FirstRandom();
-}
-
-
-var pointsThisRound = 0;
-
-function Move(dir) {
-    if (NotGameOver) {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                positionBefore[i][j] = positions[i][j];
-            }
-        }
-        let posB = "";
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                posB += positionBefore[i][j];
-            }
-        }
-        localStorage.setItem("positionBefore", posB);
-    }
-    
-
-    let score = parseInt($("#currentScore").children(".score").html());
-    switch(dir) {
-        case 1:
-            for (let j = 3; j >= 0; j--) {
-                let rowString = "";
-                let x = 0;
-                for (let i = 0; i < 4; i++) {
-                    if (positions[i][j] !== 0) {
-                        rowString += (positions[i][j]).toString(16);
-                        positions[i][j] = 0;
-                    }
-                }
-                for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[x][j] = parseInt(rowString[k], 16);
-                    if (x !== 0) {
-                        if (positions[x - 1][j] === positions[x][j]) {
-                            if (ifAdded[x - 1][j] === 0) {
-                                positions[x - 1][j]++;
-                                positions[x][j] = 0;
-                                ifAdded[x - 1][j] = 1;
-                                score += Math.pow(2, positions[x - 1][j]);
-                                pointsThisRound += Math.pow(2, positions[x - 1][j]);
-                            } else {
-                                x++;
-                            }
-                        } else {
-                            x++;
-                        }
-                    } else {
-                        x++;
-                    }
-                    
-                }
-            }
-            break;
-
-        case 2:
-            for (let j = 0; j < 4; j++) {
-                let rowString = "";
-                let x = 3;
-                for (let i = 3; i >= 0; i--) {
-                    if (positions[i][j] !== 0) {
-                        rowString += (positions[i][j]).toString(16);
-                        positions[i][j] = 0;
-                    }
-                }
-                for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[x][j] = parseInt(rowString[k], 16);
-                    if (x !== 3) {
-                        if (positions[x + 1][j] === positions[x][j]) {
-                            if (ifAdded[x + 1][j] === 0) {
-                                positions[x + 1][j]++;
-                                positions[x][j] = 0;
-                                ifAdded[x + 1][j] = 1;
-                                score += Math.pow(2, positions[x + 1][j]);
-                                pointsThisRound += Math.pow(2, positions[x + 1][j]);
-                            } else {
-                                x--;
-                            }
-                        } else {
-                            x--;
-                        }
-                    } else {
-                        x--;
-                    }
-                }
-            }
-            break;
+            let newBlock = new block(numberForNewBlock, positionForNewBlock);
+            newBlock.createBlock(positionForNewBlock);
         
-        
-        case 3:
-            for (let i = 0; i < 4; i++) {
-                let rowString = "";
-                let x = 3;
-                for (let j = 3; j >= 0; j--) {
-                    if (positions[i][j] !== 0) {
-                        rowString += (positions[i][j]).toString(16);
-                        positions[i][j] = 0;
-                    }
-                }
-                for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[i][x] = parseInt(rowString[k], 16);
-                    if (x !== 3) {
-                        if (positions[i][x + 1] === positions[i][x]) {
-                            if (ifAdded[i][x + 1] === 0) {
-                                positions[i][x + 1]++;
-                                positions[i][x] = 0;
-                                ifAdded[i][x + 1] = 1;
-                                score += Math.pow(2, positions[i][x + 1]);
-                                pointsThisRound += Math.pow(2, positions[i][x + 1]);
-                            } else {
-                                x--;
-                            }
-                        } else {
-                            x--;
-                        }
-                    } else {
-                        x--;
-                    }
-                }
-            }
-            break;
-        
-        case 4:
-            for (let i = 3; i >= 0; i--) {
-                let rowString = "";
-                let x = 0;
-                for (let j = 0; j < 4; j++) {
-                    if (positions[i][j] !== 0) {
-                        rowString += (positions[i][j]).toString(16);
-                        positions[i][j] = 0;
-                    }
-                }
-                for (let k = 0; k <= rowString.length - 1; k++) {
-                    positions[i][x] = parseInt(rowString[k], 16);
-                    if (x !== 0) {
-                        if (positions[i][x - 1] === positions[i][x]) {
-                            if (ifAdded[i][x - 1] === 0) {
-                                positions[i][x - 1]++;
-                                positions[i][x] = 0;
-                                ifAdded[i][x - 1] = 1;
-                                score += Math.pow(2, positions[i][x - 1]);
-                                pointsThisRound += Math.pow(2, positions[i][x - 1]);
-                            } else {
-                                x++;
-                            }
-                        } else {
-                            x++;
-                        }
-                    } else {
-                        x++;
-                    }
-                }
-            }
-            break;
-    }
-
-    $("#currentScore").children(".score").html(score);
-    if (score > parseInt($("#bestScore").children(".score").html())) {
-        $("#bestScore").children(".score").html(score);
-        localStorage.setItem("bestScore", score);
-    }
-    isNotFirstMove = 1;
-}
-
-function Draw() {
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            $("#s" + i + j).addClass("free").empty();
-            if (positions[i][j] !== 0) {
-                let number = Math.pow(2, positions[i][j]);
-                $("#s" + i + j).append("<div class = \" block n" + number + "\">" + number + "</div>").removeClass("free");
-                if (ifAdded[i][j]) {
-                    $("#s" + i + j).children().addClass("justAdded");
-                }
-            }
-            
+            activeBlocks[positionForNewBlock] = newBlock;
+        }
+        else {
+            makeBlock(1);
         }
     }
 }
 
-function isGameOver() {
-    for (let i = 0; i <= 3; i++) {
-        for (let j = 0; j <= 3; j++) {
-            isEnd[i + 1][j + 1] = positions[i][j];
-        }
-    }
-    let howMany = 0;
-
-    for (let i = 1; i < 5; i++) {
-        for (let j = 1; j < 5; j++) {
-            if (isEnd[i][j] == isEnd[i - 1][j]) {
-                howMany++;
-            }
-
-            if (isEnd[i][j] == isEnd[i + 1][j]) {
-                howMany++;
-            }
-            if (isEnd[i][j] == isEnd[i][j - 1]) {
-                howMany++;
-            }
-            if (isEnd[i][j] == isEnd[i][j + 1]) {
-                howMany++;
-            }
-        }
-    }
-
-    if(!howMany) {
-        if ($("#end").children().length == 0) {
-            NotGameOver = 0;
-            $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButton\">Try again</button> <button class =\"undoButton\">Undo</button></div>");
-            $(".newGameButton").click(function() {
-                $("#gameOver").remove();
-            
-                $("#currentScore").children(".score").html("0");
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        positions[i][j] = 0;
-                    }
-                }
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        lastPosition[i][j] = 0;
-                    }
-                }
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 4; j++) {
-                        ifAdded[i][j] = 0;
-                    }
-                }
-                Draw();
-                FirstRandom();
-                FirstRandom();
-                NotGameOver = 1;
-            });
-
-            $(".undoButton").click(function() {
-                $("#gameOver").remove();
-                if (isNotFirstMove) {
-                    for (let i = 0; i < 4; i++) {
-                        for (let j = 0; j < 4; j++) {
-                            positions[i][j] = positionBefore[i][j];
-                        }
-                    }
-                    Draw();
-                    NotGameOver = 1;
-                    if (localStorage.getItem("lastPoints")) {
-                        let score = localStorage.getItem("lastPoints");
-                        $("#currentScore").children(".score").html(score);
-                    }
-                }
-            });
-        }
-        
-    } else {
-        return;
-    }
+function checkIfSquareIsEmpty(squareID) {
+    return $('#square' + squareID).children().length;
 }
 
+function addMovementToBlock(event) {
+    ifChanged = 0;
+    lastPosition.temporaryLastScore = lastPosition.lastScore;
+    lastPosition.lastScore = score.current;
+    lastPosition.temporaryPositionForLastPosition = JSON.parse(JSON.stringify(lastPosition.lastPosition));
+    lastPosition.lastPosition = JSON.parse(JSON.stringify(activeBlocks));
 
-$("body").keyup(function(event) {
-    $('.thisRoundPoints').remove();
-    pointsThisRound = 0;
     let key = event.key;
-    
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            lastPosition[i][j] = positions[i][j];
-        }
+    if (key == "ArrowRight" || key == "d") {
+        Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveRight(1);
+        });
+    }
+    else if (key == "ArrowLeft" || key == "a") {
+        Object.values(activeBlocks).forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveRight(0);
+        });
+    }
+    else if (key == "ArrowDown" || key == "s") {
+        Object.values(activeBlocks).slice().reverse().forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveUp(0);
+        });
+    }
+    else if (key == "ArrowUp" || key == "w") {
+        Object.values(activeBlocks).forEach(oneBlock => {
+            if (oneBlock != '') oneBlock.moveUp(1);
+        });
+    }
+    if (ifChanged) {
+        score.last = score.current;
+        score.current += score.move;
+        showGainedPoints();
+        score.move = 0;
+
+        makeBlock(1);
+        save();
     }
 
-    switch(key) {
-        case "ArrowUp":
-            Move(1);
-            Draw();
-            break;
-        case "ArrowDown":
-            Move(2);
-            Draw();
-            break;
-        case "ArrowRight":
-            Move(3);
-            Draw();   
-            break;
-        case "ArrowLeft":
-            Move(4);
-            Draw();
-            break;
-    }
-    
-    let different = 0;
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            if(lastPosition[i][j] != positions[i][j]) {
-                different++;
-            }
-        }
+    else {
+        lastPosition.lastPosition = JSON.parse(JSON.stringify(lastPosition.temporaryPositionForLastPosition)); 
+        lastPosition.lastScore = lastPosition.temporaryLastScore;
     }
 
+}
 
-    if (different) {
-        FirstRandom();
-        isGameOver();
-    }
-    
+function gettingRandomNumber(from, to) {
+    return Math.floor(from + Math.random() * to);
+}
 
-    for (let i = 0; i <= 3; i++) {
-        for (let j = 0; j <= 3; j++) {
-            ifAdded[i][j] = 0;
-        }
-    }
-    
-    if (pointsThisRound) {
-        $("#currentScore").append("<div class = \"thisRoundPoints\">+" + pointsThisRound + "</div>");
+function showGainedPoints() {
+    if (score.move) {
+        $('.thisRoundPoints').remove();
+        $('#currentScoreBox').children('.score').html(score.current);
+        $('#currentScoreBox').append('<div class = \'thisRoundPoints\'>+' + score.move + '</div>');
 
         $('.thisRoundPoints').bind('animationend', function(e) { 
             $(this).remove(); 
         });
     }
-
-    let score = parseInt($("#currentScore").children(".score").html());
-    lastAddedPoints = score - pointsThisRound;
-    localStorage.setItem("lastPoints", lastAddedPoints);
-});
-
-$(".newGameButton").click(function() {
-    $("#gameOver").remove();
-
-    $("#currentScore").children(".score").html("0");
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            positions[i][j] = 0;
-        }
-    }
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            lastPosition[i][j] = 0;
-        }
-    }
-    for (let i = 0; i < 4; i++) {
-        for (let j = 0; j < 4; j++) {
-            ifAdded[i][j] = 0;
-        }
-    }
-    Draw();
-    FirstRandom();
-    FirstRandom();
-    isNotFirstMove = 0;
-});
-
-$(".undoButton").click(function() {
-    if (isNotFirstMove) {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                positions[i][j] = positionBefore[i][j].toString();
-            }
-        }
-        let pos = "";
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 4; j++) {
-                pos += positions[i][j].toString(16);
-            }
-        }
-        localStorage.setItem("position", pos);
-        if (localStorage.getItem("lastPoints")) {
-            let score = localStorage.getItem("lastPoints");
-            $("#currentScore").children(".score").html(score);
-        }
-        
-        Draw();
-    }
-});
-
-for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-        if (positions[i][j] != 0) {
-            isNotFirstMove = 1;
-        }
+    
+    if (score.current > score.best) {
+        score.best = score.current;
+        $('#bestScoreBox').children('.score').html(score.best);
     }
 }
+
+function moveBackToTheLastPosition() {
+    $('#end').children().remove();
+    $('.block').remove();
+    activeBlocks = JSON.parse(JSON.stringify(lastPosition.lastPosition));
+    makePosition();
+    score.current = lastPosition.lastScore;
+    $('#currentScoreBox').children('.score').html(score.current);
+    save();
+}
+
+function save() {
+    localStorage.setItem('currentPosition', JSON.stringify(activeBlocks));
+    localStorage.setItem('currentScore', score.current);
+    localStorage.setItem('lastPosition', JSON.stringify(lastPosition.lastPosition));
+    localStorage.setItem('lastScore', score.last);
+    localStorage.setItem('bestScore', score.best);
+}
+
+function load() {
+    $('.block').remove();
+    score.best = parseInt(localStorage.getItem('bestScore'));
+    $('#bestScoreBox').children('.score').html(score.best);
+    score.last = parseInt(localStorage.getItem('lastScore'));
+    lastPosition.lastScore = parseInt(localStorage.getItem('lastScore'));
+    score.current = parseInt(localStorage.getItem('currentScore'));
+    $('#currentScoreBox').children('.score').html(score.current);
+    activeBlocks = JSON.parse(localStorage.getItem('currentPosition'));
+    makePosition();
+    lastPosition.lastPosition = JSON.parse(localStorage.getItem('lastPosition'));
+
+    if (!ifMoveIsPossible()) endGame();
+}
+
+function makePosition() {
+    Object.values(activeBlocks).forEach(oneBlock => {
+        if (oneBlock.position >= 0 && oneBlock.position <= 15) {
+            let newBlock = new block(Math.log2(oneBlock.number), oneBlock.position);
+            newBlock.createBlock(oneBlock.position);
+
+            activeBlocks[oneBlock.position] = newBlock;
+        }
+    });
+}
+
+function ifMoveIsPossible() {
+    for (let i = 0; i < boardSize; i++) if (!activeBlocks[i]) return true;
+    for (let i = 0; i < boardSize; i++) if (i % 4 != 3) if (activeBlocks[i].number == activeBlocks[i + 1].number) return true;
+    for (let i = 0; i < boardSize; i++) if (i < 12) if (activeBlocks[i].number == activeBlocks[i + 4].number) return true;
+
+    return false;
+}
+
+function endGame() {
+    if ($("#end").children().length == 0) $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"undoButtonStyle\" id = \"endGameUndoButton\">Undo</button> <button class =\"newGameButtonStyle\" id = \"endGameNewGameButton\">Try Aain</button> </div>");
+    $("#newGameButton").html('Try Again');
+    $('#endGameNewGameButton').click(clearBoardAndStartNewGame);
+    $('#endGameNewGameButton').click(save);
+    $('#endGameUndoButton').click(moveBackToTheLastPosition);
+}
+
+
+// On Load
+makeBoardWithEmptySquares();
+if(localStorage.getItem("lastPosition")) load();
+$('#newGameButton').click(clearBoardAndStartNewGame);
+$('#newGameButton').click(save);
+$('#undoButton').click(moveBackToTheLastPosition);
+$('body').keyup(function(event) {
+    addMovementToBlock(event);
+    if(!ifMoveIsPossible()) endGame();
+});

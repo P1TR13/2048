@@ -1,9 +1,9 @@
 body {
-    margin: 10px;
+    margin: 10px; /*TO CHANGE*/
     background-color: #faf8ef;
     text-align: center;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    font-size: 16px;
+    font-size: 16px; /*TO CHANGE*/
     font-weight: bold;
     color: #776e65;
     overflow: hidden;
@@ -11,11 +11,11 @@ body {
 
 
 #container {
-    width: 462.55px;
+    width: 462.55px; /*TO CHANGE*/
     height: 100vh;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 150px 0px auto;
+    grid-template-rows: 150px 0px auto; /*TO CHANGE*/
     
     justify-content: center;
     margin: auto;
@@ -30,7 +30,7 @@ body {
 }
 
 #title {
-    font-size: 80px;
+    font-size: 80px; /*TO CHANGE*/
     margin: auto 0;
     text-align: left;
 }
@@ -42,24 +42,24 @@ body {
     justify-content: right;
 }
 
-#currentScore, #bestScore {
+#currentScoreBox, #bestScoreBox {
     background-color: #bbada0;
     color: #faf8ef;
-    height: 45px;
-    padding: 5px 15px;
-    border-radius: 4px;
-    margin: 0 2px;
+    height: 45px; /*TO CHANGE*/
+    padding: 5px 15px; /*TO CHANGE*/
+    border-radius: 4px; /*TO CHANGE*/
+    margin: 0 2px; /*TO CHANGE*/
     text-align: center;
     justify-content: center;
 }
 
 .name {
-    font-size: 12px;
+    font-size: 12px; /*TO CHANGE*/
     color: #eee4da;
 }
 
 .score {
-    font-size: 24px;
+    font-size: 24px; /*TO CHANGE*/
 }
 
 p {
@@ -67,8 +67,8 @@ p {
 }
 
 .thisRoundPoints {
-    margin-top: -30px;
-    font-size: 24px;
+    margin-top: -30px; /*TO CHANGE*/
+    font-size: 24px; /*TO CHANGE*/
     color: #776e65;
     animation: moveUp 1.2s;
     display: relative;
@@ -84,47 +84,47 @@ p {
     grid-column: span 2;
 }
 
-.newGameButton, .undoButton {
+.newGameButtonStyle, .undoButtonStyle {
     background-color: #8f7a66;
     border: none;
     color: #faf8ef;
-    height: 40px;
-    width: 130px;
+    height: 40px; /*TO CHANGE*/
+    width: 130px; /*TO CHANGE*/
     font-weight: bold;
-    font-size: 18px;
-    border-radius: 4px;
+    font-size: 18px; /*TO CHANGE*/
+    border-radius: 4px; /*TO CHANGE*/
 }
 
-.newGameButton:hover, .undoButton:hover {
+.newGameButtonStyle:hover, .undoButtonStyle:hover {
     cursor: pointer;
 }
 
-.undoButton {
-    margin-right: 20px;
-    width: 100px;
+.undoButtonStyle {
+    margin-right: 20px; /*TO CHANGE*/
+    width: 100px; /*TO CHANGE*/
 }
 
-#grid {
-    width: 431.2px;
-    height: 431.2px;
-    padding: 15.680px;
+#board {
+    width: 431.2px; /*TO CHANGE*/
+    height: 431.2px; /*TO CHANGE*/
+    padding: 15.680px; /*TO CHANGE*/
     margin: 0 auto;
-    margin-top: 40px;
+    margin-top: 40px; /*TO CHANGE*/
     border-radius: 2%;
     background-color: #bbada0;
     display: grid;
-    grid-template-columns: 96.037px 96.037px 96.037px 96.037px;
-    grid-template-rows: 96.037px 96.037px 96.037px 96.037px;
-    grid-gap: 15.68px;
+    grid-template-columns: 96.037px 96.037px 96.037px 96.037px; /*TO CHANGE*/
+    grid-template-rows: 96.037px 96.037px 96.037px 96.037px; /*TO CHANGE*/
+    grid-gap: 15.68px; /*TO CHANGE*/
 }
 
 #gameOver {
-    margin-top: 40px;
+    margin-top: 40px; /*TO CHANGE*/
     position: relative;
-    width: 463.56px;
-    height: 463.56px;
+    width: 463.56px; /*TO CHANGE*/
+    height: 463.56px; /*TO CHANGE*/
     padding-top: 33%;
-    font-size: 60px;
+    font-size: 60px; /*TO CHANGE*/
     background-color: #ffffff7a;
     z-index: 2;
     animation: fadeIn 2s;
@@ -145,7 +145,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 55px;
+    font-size: 55px; /*TO CHANGE*/
 }
 
 .block {
@@ -203,31 +203,31 @@ p {
 .n1024 {
     background-color: #ddad37;
     color: #f9f6f2;
-    font-size: 40px;
+    font-size: 40px; /*TO CHANGE*/
 }
 
 .n2048 {
     background-color: #edc42e;
     color: #f9f6f2;
-    font-size: 40px;
+    font-size: 40px; /*TO CHANGE*/
 }
 
 .n4096 {
     background-color: #fc726c;
     color: #f9f6f2;
-    font-size: 40px;
+    font-size: 40px; /*TO CHANGE*/
 }
 
 .n8192 {
     background-color: #fc5c59;
     color: #f9f6f2;
-    font-size: 40px;
+    font-size: 40px; /*TO CHANGE*/
 }
 
 .n16384 {
   background-color: #f05139;
   color: #f9f6f2;
-  font-size: 30px;
+  font-size: 30px; /*TO CHANGE*/
 }
 
 .justCreated {
@@ -241,11 +241,11 @@ p {
 @keyframes moveUp {
     0% {
         opacity: 1;
-        margin-top: -30px;
+        margin-top: -30px; /*TO CHANGE*/
     }
     100% {
         opacity: 0;
-        margin-top: -100px;
+        margin-top: -100px; /*TO CHANGE*/
     }
 }
 
@@ -262,12 +262,12 @@ p {
     0% {
         height: 0%;
         width: 0%;
-        font-size: 0px;
+        font-size: 0;
     }
     100% {
         height: 100%;
         width: 100%;
-        font-size: 55px;
+        font-size: 55px; /*TO CHANGE*/
     }
 }
 
@@ -275,18 +275,18 @@ p {
     0% {
         height: 100%;
         width: 100%;
-        font-size: 55px;
+        font-size: 55px; /*TO CHANGE*/
     }
 
     50% {
         height: 120%;
         width: 120%;
-        font-size: 66px;
+        font-size: 66px; /*TO CHANGE*/
     }
 
     100% {
         height: 100%;
         width: 100%;
-        font-size: 55px;
+        font-size: 55px; /*TO CHANGE*/
     }
 }
