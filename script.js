@@ -167,6 +167,11 @@ function addMovementToBlock(event) {
         });
     }
     if (ifChanged) {
+        score.last = score.current;
+        score.current += score.move;
+        showGainedPoints();
+        score.move = 0;
+
         makeBlock(1);
         save();
     }
@@ -176,10 +181,6 @@ function addMovementToBlock(event) {
         lastPosition.lastScore = lastPosition.temporaryLastScore;
     }
 
-    score.last = score.current;
-    score.current += score.move;
-    showGainedPoints();
-    score.move = 0;
 }
 
 function gettingRandomNumber(from, to) {
@@ -210,10 +211,10 @@ function moveBackToTheLastPosition() {
     makePosition();
     score.current = lastPosition.lastScore;
     $('#currentScoreBox').children('.score').html(score.current);
+    save();
 }
 
 function save() {
-    // localStorage: currentPosition = activeBlocks, currentScore = score.current, lastPosition = lastPosition.lastPosition, lastScore = score.last, bestScore = score.best
     localStorage.setItem('currentPosition', JSON.stringify(activeBlocks));
     localStorage.setItem('currentScore', score.current);
     localStorage.setItem('lastPosition', JSON.stringify(lastPosition.lastPosition));
@@ -222,14 +223,18 @@ function save() {
 }
 
 function load() {
-    score.best = localStorage.getItem('bestScore');
+    $('.block').remove();
+    score.best = parseInt(localStorage.getItem('bestScore'));
     $('#bestScoreBox').children('.score').html(score.best);
-    score.last = localStorage.getItem('lastScore');
-    score.current = localStorage.getItem('currentScore');
+    score.last = parseInt(localStorage.getItem('lastScore'));
+    lastPosition.lastScore = parseInt(localStorage.getItem('lastScore'));
+    score.current = parseInt(localStorage.getItem('currentScore'));
     $('#currentScoreBox').children('.score').html(score.current);
     activeBlocks = JSON.parse(localStorage.getItem('currentPosition'));
     makePosition();
     lastPosition.lastPosition = JSON.parse(localStorage.getItem('lastPosition'));
+
+    if (!ifMoveIsPossible()) endGame();
 }
 
 function makePosition() {
@@ -246,39 +251,27 @@ function makePosition() {
 function ifMoveIsPossible() {
     for (let i = 0; i < boardSize; i++) if (!activeBlocks[i]) return true;
     for (let i = 0; i < boardSize; i++) if (i % 4 != 3) if (activeBlocks[i].number == activeBlocks[i + 1].number) return true;
-    for (let i = 0; i < boardSize; i++) if (i < 11) if (activeBlocks[i].number == activeBlocks[i + 4].number) return true;
+    for (let i = 0; i < boardSize; i++) if (i < 12) if (activeBlocks[i].number == activeBlocks[i + 4].number) return true;
 
     return false;
 }
 
 function endGame() {
-    if ($("#end").children().length == 0) $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"newGameButtonStyle\" id = \"endGameNewGameButton\">Try again</button> <button class =\"undoButtonStyle\" id = \"endGameUndoButton\">Undo</button></div>");
+    if ($("#end").children().length == 0) $("#end").append("<div id = \"gameOver\"><p>Game over!</p> <button class =\"undoButtonStyle\" id = \"endGameUndoButton\">Undo</button> <button class =\"newGameButtonStyle\" id = \"endGameNewGameButton\">Try Aain</button> </div>");
     $("#newGameButton").html('Try Again');
     $('#endGameNewGameButton').click(clearBoardAndStartNewGame);
+    $('#endGameNewGameButton').click(save);
     $('#endGameUndoButton').click(moveBackToTheLastPosition);
 }
 
 
 // On Load
 makeBoardWithEmptySquares();
+if(localStorage.getItem("lastPosition")) load();
 $('#newGameButton').click(clearBoardAndStartNewGame);
+$('#newGameButton').click(save);
 $('#undoButton').click(moveBackToTheLastPosition);
 $('body').keyup(function(event) {
     addMovementToBlock(event);
     if(!ifMoveIsPossible()) endGame();
 });
-
-// if(localStorage.getItem("position")) {
-//     for (let i = 0; i < 4; i++) {
-//         for (let j = 0; j < 4; j++) {
-//             positions[i][j] = parseInt(localStorage.getItem("position")[(i * 4 + j)], 16)
-//         }
-//     }
-//     Draw();
-//     if(localStorage.getItem("currentScore")) {
-//         $("#currentScore").children(".score").html(localStorage.getItem("currentScore"));
-//     }
-// } else {
-//     FirstRandom();
-//     FirstRandom();
-// }
